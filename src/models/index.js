@@ -6,10 +6,6 @@ import 'dotenv/config';
 const basename = path.basename(__filename);
 const models = {};
 
-export const connectDb = () => {
-  return mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
-};
-
 fs.readdirSync(__dirname)
   .filter(
     file =>
@@ -18,5 +14,9 @@ fs.readdirSync(__dirname)
   .forEach(file => {
     models[file.slice(0, -3)] = require(path.join(__dirname, file));
   });
+
+export const connectDb = () => {
+  return mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true });
+};
 
 export default models;

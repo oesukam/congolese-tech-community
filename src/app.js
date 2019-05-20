@@ -18,4 +18,14 @@ app.use(morgan(isProd ? 'combined' : 'dev'));
 
 app.use(joiErrors());
 
+app.use((err, req, res) => {
+  const status = err.status || 500;
+  res.status(status).json({
+    errors: {
+      message: err.message,
+      status,
+    },
+  });
+});
+
 export default app;
