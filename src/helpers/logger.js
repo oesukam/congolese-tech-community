@@ -19,11 +19,9 @@ const logger = winston.createLogger({
 // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
 //
 if (process.env.NODE_ENV !== 'production') {
-  logger.add(
-    new winston.transports.Console({
+  logger.add(new winston.transports.Console({
       format: winston.format.simple(),
-    }),
-  );
+    }),);
 }
 
 export default logger;
