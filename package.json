@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test": "jest --coverage --detectOpenHandles --forceExit",
+    "test": "jest --coverage --detectOpenHandles",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "dev": "babel-watch src/index.js",
     "start": "babel-node src/index.js",
