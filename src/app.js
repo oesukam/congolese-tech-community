@@ -27,7 +27,7 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerYAMLDocs));
 
 app.use(passport.initialize());
 
-app.use('/api', router);
+app.use(router);
 
 app.use((req, res, next) => {
   const status = 404;
