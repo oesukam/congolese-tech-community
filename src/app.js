@@ -4,9 +4,12 @@ import cors from 'cors';
 import 'dotenv/config';
 import swaggerUI from 'swagger-ui-express';
 import YAML from 'yamljs';
+import passport from 'passport';
 import joiErrors from './middlewares/joiErrors';
 import { connectDb } from './models';
 import logger from './helpers/logger';
+
+import router from './routes';
 
 const isProd = process.env.NODE_ENV === 'production';
 const app = express();
@@ -21,6 +24,10 @@ app.use(morgan(isProd ? 'combined' : 'dev'));
 
 app.use(joiErrors());
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerYAMLDocs));
+
+app.use(passport.initialize());
+
+app.use('/api', router);
 
 app.use((req, res, next) => {
   const status = 404;
