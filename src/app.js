@@ -29,13 +29,12 @@ app.use(passport.initialize());
 
 app.use(router);
 
-app.use((req, res, next) => {
+app.use((req, res) => {
   const status = 404;
   res.status(status).json({
     message: 'Not found',
     status,
   });
-  next(err);
 });
 
 app.use((err, req, res) => {

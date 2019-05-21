@@ -3,6 +3,8 @@ import logger from './helpers/logger';
 
 const { PORT = 3000 } = process.env;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   logger.info(`Listening on port: ${PORT}`);
 });
+
+export default server;

@@ -1,6 +1,6 @@
 import Auth from '../controllers/auth';
 import Users from '../models/Users';
-import '../index';
+import server from '../index';
 
 const user = {
     id: "2673546576879",
@@ -22,6 +22,11 @@ describe('Google social login', () => {
         expect(res.status).toHaveBeenCalledWith(201);
     });
 
+    it('Should mock the social login controller', async () => {
+        await Auth.socialAuth({ user }, res);
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+
     it('Should mock the failing scenario when the id is an integer', async () => {
         user.id = 3465768;
         await Auth.socialAuth({ user }, res);
@@ -31,4 +36,5 @@ describe('Google social login', () => {
 
 afterAll(async () => {
     await Users.remove({});
+    await server.close();
 });
