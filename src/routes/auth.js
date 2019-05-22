@@ -19,6 +19,11 @@ router.route('/google/redirect').get(passport.authenticate('google'), Auth.socia
 router.route('/facebook')
     .get(passport.authenticate('facebook'));
 
-router.route('/facebook/redirect').get(passport.authenticate('facebook'), Auth.socialAuth);
+router.route('/facebook/redirect').get(passport.authenticate('facebook', { scope: ['email'] }), Auth.socialAuth);
+
+router.route('/github')
+    .get(passport.authenticate('github'));
+
+router.route('/github/redirect').get(passport.authenticate('github'), Auth.socialAuth);
 
 export default router;

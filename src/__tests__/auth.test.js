@@ -5,8 +5,8 @@ import server from '../index';
 
 const user = {
     id: "2673546576879",
-    email: "grace.lungu.me@gmail.com",
-    picture: "https://image.jpg",
+    emails: [{ value: "grace.lungu.me@gmail.com" }],
+    photos: [{ value: "https://image.jpg" }],
     displayName: "grace",
 }
 
@@ -28,11 +28,19 @@ describe('Social login', () => {
         expect(res.status).toHaveBeenCalledWith(200);
     });
 
+    it('Should mock the failing scenario when null values are provided', async () => {
+        user.id = "346576865768708";
+        user.emails = null;
+        await Auth.socialAuth({ user }, res);
+        expect(res.status).toHaveBeenCalledWith(201);
+    });
+
     it('Should mock the failing scenario when the id is an integer', async () => {
         user.id = 3465768;
         await Auth.socialAuth({ user }, res);
         expect(res.status).toHaveBeenCalledWith(500);
     });
+
 });
 
 afterAll(async () => {

@@ -19,17 +19,15 @@ class Auth {
    *
    * @static
    * @param {*} res
-   * @param {*} user
+   * @param {*} providerUser
    * @returns {object} user
    * @memberof User
    */
-    static async findOrCreate(res, user) {
-
-
+    static async findOrCreate(res, providerUser) {
         try {
             const {
                 id, email, picture, displayName,
-            } = user;
+            } = Auth.fromProvider(providerUser);
 
             const username = displayName.replace(/\s+/g, '') + id.substr(0, 5);
             const token = jwt.sign({ email, username }, process.env.SECRET, { expiresIn: '2d' });
@@ -76,6 +74,22 @@ class Auth {
      */
     static async socialAuth(req, res) {
         await Auth.findOrCreate(res, req.user);
+    }
+
+    /**
+     * Adds different fields to the user
+     *
+     * @static
+     * @param {*} user
+     * @returns {object} user
+     * @memberof Auth
+     */
+    static fromProvider(user) {
+        return {
+            ...user,
+            email: user.emails ? user.emails[0].value : null,
+            picture: user.photos[0].value,
+        };
     }
 
 }
