@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Auth from '../controllers/auth';
 import Users from '../models/Users';
 import server from '../index';
@@ -37,4 +38,5 @@ describe('Google social login', () => {
 afterAll(async () => {
     await Users.remove({});
     await server.close();
+    await mongoose.disconnect();
 });
