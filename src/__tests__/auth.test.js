@@ -17,13 +17,13 @@ const res = {
 
 jest.spyOn(res, 'status');
 
-describe('Google social login', () => {
+describe('Social login', () => {
     it('Should mock the social login controller', async () => {
         await Auth.socialAuth({ user }, res);
         expect(res.status).toHaveBeenCalledWith(201);
     });
 
-    it('Should mock the social login controller', async () => {
+    it('Should mock the social login controller for an existing account', async () => {
         await Auth.socialAuth({ user }, res);
         expect(res.status).toHaveBeenCalledWith(200);
     });

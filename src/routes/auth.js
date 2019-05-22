@@ -16,4 +16,9 @@ router.route('/google')
 
 router.route('/google/redirect').get(passport.authenticate('google'), Auth.socialAuth);
 
+router.route('/facebook')
+    .get(passport.authenticate('facebook'));
+
+router.route('/facebook/redirect').get(passport.authenticate('facebook'), Auth.socialAuth);
+
 export default router;
