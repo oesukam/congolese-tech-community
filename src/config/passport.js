@@ -27,7 +27,7 @@ passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
     callbackURL: `${process.env.DOMAIN}/auth/facebook/redirect`,
-    profileFields: ['id', 'email', 'displayName', 'photos']
+    profileFields: ['id', 'email', 'displayName', 'photos', 'name']
 }, (req, accessToken, refreshToken, profile, done) => {
     done(null, profile);
 }));

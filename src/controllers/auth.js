@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import Users from '../models/Users';
-import Errors from '../helpers/errors';
+import User from '../models/User';
+import Personal from '../models/Personal';
 
 dotenv.config();
 
@@ -24,42 +24,49 @@ class Auth {
    * @memberof User
    */
     static async findOrCreate(res, providerUser) {
-        try {
-            const {
-                id, email, picture, displayName,
-            } = Auth.fromProvider(providerUser);
 
-            const username = displayName.replace(/\s+/g, '') + id.substr(0, 5);
-            const token = jwt.sign({ email, username }, process.env.SECRET, { expiresIn: '2d' });
+        const {
+            id, email, picture, displayName, name
+        } = Auth.fromProvider(providerUser);
 
+        const getUser = userId => Personal.findById(userId).populate('user').exec();
 
-            const exist = await Users.findOne({ email });
+        const username = displayName.replace(/\s+/g, '') + id.substr(0, 5);
+        const token = jwt.sign({ email, username }, process.env.SECRET, { expiresIn: '2d' });
 
-            if (exist == null) {
+        const exist = await Personal.findOne({ providerId: id });
 
-                const result = await Users.create({
-                    username,
-                    email,
-                    picture,
-                    userType: 'Personal'
-                });
-                return res.status(201).json({
-                    status: 201,
-                    user: result,
-                    token,
-                });
-            }
+        if (exist == null) {
 
-            return res.status(200).json({
-                status: 200,
-                user: exist,
-                token,
+            const user = await User.create({
+                username,
+                email,
+                picture,
             });
 
-        } catch (e) {
-            Errors.errorResponse(res, e);
+            const { givenName, familyName } = name;
+
+            const personal = await Personal.create({
+                providerId: id,
+                firstName: givenName,
+                lastName: familyName,
+                user: user.id
+            });
+
+            const result = await getUser(personal.id);
+
+            return res.status(201).json({
+                user: result,
+                token,
+            });
         }
-        return true;
+
+        const result = await getUser(exist.id);
+
+        return res.status(200).json({
+            user: result,
+            token,
+        });
     }
 
     /**
@@ -87,6 +94,7 @@ class Auth {
     static fromProvider(user) {
         return {
             ...user,
+            name: user.name || { givenName: null, familyName: null },
             email: user.emails ? user.emails[0].value : null,
             picture: user.photos[0].value,
         };

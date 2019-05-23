@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const usersSchema = {
+const userSchema = {
     username: {
         type: String,
         required: true,
@@ -19,11 +19,6 @@ const usersSchema = {
     picture: {
         type: String,
         default: null,
-    },
-    userType: {
-        type: String,
-        enum: ['Personal', 'Organization'],
-        required: true,
     },
     country: {
         type: String,
@@ -46,18 +41,18 @@ const usersSchema = {
     linkedIn: {
         type: String
     },
-    createdDate: {
+    createdAt: {
         type: Date,
         default: new Date(),
     },
-    updatedDate: {
+    updatedAt: {
         type: Date,
         default: null,
     },
-    active: {
-        type: Boolean,
-        default: true,
+    states: {
+        type: String,
+        default: 'active',
     },
 }
 
-export default mongoose.model('Users', usersSchema);
+export default mongoose.model('User', userSchema);

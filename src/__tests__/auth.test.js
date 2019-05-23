@@ -1,14 +1,12 @@
 import mongoose from 'mongoose';
 import Auth from '../controllers/auth';
-import Users from '../models/Users';
+import User from '../models/User';
+import Personal from '../models/Personal';
 import server from '../index';
 
-const user = {
-    id: "2673546576879",
-    emails: [{ value: "grace.lungu.me@gmail.com" }],
-    photos: [{ value: "https://image.jpg" }],
-    displayName: "grace",
-}
+import users from '../__mocks__/users';
+
+const { personal: user } = users;
 
 const res = {
     status() { return this },
@@ -29,22 +27,16 @@ describe('Social login', () => {
     });
 
     it('Should mock the failing scenario when null values are provided', async () => {
-        user.id = "346576865768708";
-        user.emails = null;
-        await Auth.socialAuth({ user }, res);
+        await Auth.socialAuth({ user: { ...user, id: "3456790876854", name: { givenName: null, familyName: null }, emails: null } }, res);
         expect(res.status).toHaveBeenCalledWith(201);
     });
 
-    it('Should mock the failing scenario when the id is an integer', async () => {
-        user.id = 3465768;
-        await Auth.socialAuth({ user }, res);
-        expect(res.status).toHaveBeenCalledWith(500);
+    afterAll(async () => {
+        await User.remove({});
+        await Personal.remove({});
+        await server.close();
+        await mongoose.disconnect();
     });
-
 });
 
-afterAll(async () => {
-    await Users.remove({});
-    await server.close();
-    await mongoose.disconnect();
-});
+
