@@ -11,6 +11,7 @@ module.exports = {
     'src/helpers/logger.js',
     'src/models/index.js',
     'src/middlewares/joiErrors.js',
+    'src/config/passport.js'
   ],
   verbose: true,
   coverageThreshold: {
