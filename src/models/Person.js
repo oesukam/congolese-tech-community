@@ -30,4 +30,4 @@ const personalSchema = {
     user: { type: Schema.Types.ObjectId, ref: 'User' },
 }
 
-export default mongoose.model('Personal', personalSchema);
+export default mongoose.model('Person', personalSchema);

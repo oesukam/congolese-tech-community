@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import User from '../models/User';
-import Personal from '../models/Personal';
+import Person from '../models/Person';
 
 dotenv.config();
 
@@ -10,7 +10,7 @@ dotenv.config();
  *
  * @class Auth
  */
-class Auth {
+class AuthController {
 
     /**
    * Checks whether the user exists,
@@ -27,14 +27,14 @@ class Auth {
 
         const {
             id, email, picture, displayName, name
-        } = Auth.fromProvider(providerUser);
+        } = AuthController.fromProvider(providerUser);
 
-        const getUser = userId => Personal.findById(userId).populate('user').exec();
+        const getUser = userId => Person.findById(userId).populate('user').exec();
 
         const username = displayName.replace(/\s+/g, '') + id.substr(0, 5);
         const token = jwt.sign({ email, username }, process.env.SECRET, { expiresIn: '2d' });
 
-        const exist = await Personal.findOne({ providerId: id });
+        const exist = await Person.findOne().or([{ providerId: id }, { email }]);
 
         if (exist == null) {
 
@@ -46,14 +46,14 @@ class Auth {
 
             const { givenName, familyName } = name;
 
-            const personal = await Personal.create({
+            const person = await Person.create({
                 providerId: id,
                 firstName: givenName,
                 lastName: familyName,
                 user: user.id
             });
 
-            const result = await getUser(personal.id);
+            const result = await getUser(person.id);
 
             return res.status(201).json({
                 user: result,
@@ -80,7 +80,7 @@ class Auth {
      * @return {void}
      */
     static async socialAuth(req, res) {
-        await Auth.findOrCreate(res, req.user);
+        await AuthController.findOrCreate(res, req.user);
     }
 
     /**
@@ -102,4 +102,4 @@ class Auth {
 
 }
 
-export default Auth;
+export default AuthController;
