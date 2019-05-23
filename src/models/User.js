@@ -1,50 +1,58 @@
-import { Schema, model } from 'mongoose';
+import mongoose from 'mongoose';
 
-const UserSchema = new Schema({
-  authType: {
-    type: String,
-  },
-  userType: {
+const UserSchema = {
+  username: {
     type: String,
     required: true,
-    default: 'user',
-  },
-  image: {
-    type: String,
+    unique: true,
   },
   email: {
     type: String,
-  },
-  username: {
-    type: String,
+    required: false,
     unique: true,
+    lowercase: true,
   },
   password: {
     type: String,
-    unique: true,
+    default: null,
+  },
+  picture: {
+    type: String,
+    default: null,
   },
   country: {
     type: String,
-    required: true,
   },
   city: {
     type: String,
   },
-  linkedInLink: {
+  website: {
     type: String,
   },
-  githubLink: {
+  twitter: {
     type: String,
   },
-  facebookLink: {
+  facebook: {
     type: String,
   },
-  twitterLink: {
+  github: {
     type: String,
   },
-  websiteLink: {
+  linkedIn: {
     type: String,
   },
-});
+  createdAt: {
+    type: Date,
+    default: new Date(),
+  },
+  updatedAt: {
+    type: Date,
+    default: null,
+  },
+  status: {
+    type: String,
+    default: 'active',
+  },
+};
 
-export default model('User', UserSchema);
+export default mongoose.model('User', UserSchema);

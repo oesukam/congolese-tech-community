@@ -1,7 +1,7 @@
 import express from 'express';
 import { celebrate } from 'celebrate';
 import { PostController } from '../../../controllers';
-import postValidator from './validators/postValidator';
+import { postValidator } from './validators';
 import { checkAuth, asyncHandler, checkPost } from '../../../middlewares';
 
 const router = express.Router();

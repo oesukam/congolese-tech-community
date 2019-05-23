@@ -2,14 +2,14 @@ import request from 'supertest';
 import app from '../../app';
 import { postData } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
-import { Token, Post } from '../../models';
+import { Token } from '../../models';
 
 let tokenData;
 let token;
 let postSlug;
 describe('posts', () => {
   beforeAll(async () => {
-    tokenData = await Token.findOne({});
+    tokenData = await Token.findOne({}).sort({ createdAt: -1 });
     token = `Bearer ${tokenData.token}`;
   });
 

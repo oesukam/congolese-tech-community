@@ -7,12 +7,6 @@ const { JWT_SECRET } = process.env;
 const checkAuth = async (req, res, next) => {
   let user;
 
-  if (!req.headers) {
-    return res
-      .status(401)
-      .json({ status: 401, message: 'Unauthorized access' });
-  }
-
   const { authorization = '' } = req.headers;
   const token = authorization.slice(7);
   if (!token) {

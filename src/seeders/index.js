@@ -11,11 +11,12 @@ const seedUsers = async () => {
   return new Promise(resolve => {
     users.forEach(async (val, index) => {
       const password = bcrypt.hashSync('123456', 10);
-      const user = await User.update(
+      await User.updateOne(
         { email: val.email },
         { ...val, password },
         { upsert: true, setDefaultsOnInsert: true },
       );
+      const user = await User.findOne({ email: val.email });
       const token = jwt.sign({ _id: user._id }, JWT_SECRET);
       logger.info(`username: ${user.username}, Token ${index + 1}: ${token}`);
       await Token.create({ _userId: user._id, token });
