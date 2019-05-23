@@ -5,7 +5,7 @@ env:
   global:
     - NODE_ENV=test
     - JWT_SECRET=authors_haven@secret
-    - DATABASE_URL=mongodb://localhost:27017/tech_community
+    - DATABASE_URL_TEST=mongodb://localhost:27017/tech_community_test
 language: node_js
 node_js:
   - '10.15.1'

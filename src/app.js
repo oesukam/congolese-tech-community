@@ -5,8 +5,9 @@ import 'dotenv/config';
 import swaggerUI from 'swagger-ui-express';
 import YAML from 'yamljs';
 import joiErrors from './middlewares/joiErrors';
-import { connectDb } from './models';
 import logger from './helpers/logger';
+import { connectDb } from './models';
+import routes from './routes';
 
 const isProd = process.env.NODE_ENV === 'production';
 const app = express();
@@ -17,18 +18,19 @@ connectDb().then(async () => {
 });
 
 app.use(cors());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(morgan(isProd ? 'combined' : 'dev'));
-
+app.use(routes);
 app.use(joiErrors());
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerYAMLDocs));
 
-app.use((req, res, next) => {
+app.use((req, res) => {
   const status = 404;
   res.status(status).json({
     message: 'Not found',
     status,
   });
-  next(err);
 });
 
 app.use((err, req, res) => {

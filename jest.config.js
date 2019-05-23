@@ -6,11 +6,13 @@ module.exports = {
   coveragePathIgnorePatterns: [
     'node_modules',
     'coverage',
+    'src/seeders',
     'src/index.js',
     'src/app.js',
     'src/helpers/logger.js',
     'src/models/index.js',
     'src/middlewares/joiErrors.js',
+    'src/middlewares/asyncHandler.js',
   ],
   verbose: true,
   coverageThreshold: {
