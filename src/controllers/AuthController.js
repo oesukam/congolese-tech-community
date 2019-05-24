@@ -119,23 +119,6 @@ class AuthController {
     const hashedPassword = encrypt.hashPassword(req.body.password);
     const { companyName, username, email } = req.body;
 
-    const ret = field =>
-      res.status(400).json({ message: `${field} already exist` });
-
-    const existUsername = await User.findOne({
-      username,
-    });
-    const existEmail = await User.findOne({
-      email,
-    });
-
-    if (existUsername) {
-      return ret('Username');
-    }
-    if (existEmail) {
-      return ret('Email');
-    }
-
     const user = await User.create({
       username,
       email,
@@ -217,33 +200,20 @@ class AuthController {
    * @memberof Auth
    */
   static async verification(req, res) {
-    try {
-      const { token } = req.params;
-      const jwtPayload = jwt.verify(token, process.env.SECRET);
-      // const user = await User.findOne().or([{ username }, { email: username }]);
-      const user = await User.findOne({
-        email: jwtPayload.email,
-      });
-      if (user.verified) {
-        return res.status(400).json({
-          status: 400,
-          message: 'Your account has already been verified',
-        });
-      }
-      await User.updateOne({ email: jwtPayload.email }, { verified: true });
-      return res.status(200).json({
-        message: 'Your account has been verified successfully',
-      });
-    } catch (err) {
-      let { message } = err;
-      if (message === 'jwt expired') {
-        message =
-          'Your verification email has expired, try to login to receive a new one';
-      }
-      return res.status(401).json({
-        message,
+    const { email } = req.jwtPayload;
+    const user = await User.findOne({
+      email,
+    });
+    if (user.verified) {
+      return res.status(400).json({
+        status: 400,
+        message: 'Your account has already been verified',
       });
     }
+    await User.updateOne({ email }, { verified: true });
+    return res.status(200).json({
+      message: 'Your account has been verified successfully',
+    });
   }
 }
 

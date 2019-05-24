@@ -1,5 +1,9 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import 'dotenv/config';
+
+const { SECRET } = process.env;
+
 /**
  * A helper class to hash password and compare hashed password
  */
@@ -28,14 +32,9 @@ class Authentication {
    * @returns  {string}} {expiresIn
    */
   static generateToken(data) {
-    const token = jwt.sign(
-      data,
-      process.env.SECRET,
-      { expiresIn: '2d' }
-    );
+    const token = jwt.sign(data, SECRET, { expiresIn: '2d' });
     return token;
   }
 }
-
 
 export default Authentication;

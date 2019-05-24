@@ -1,5 +1,7 @@
 import mailer from './mailer';
 
+const { DOMAIN } = process.env.DOMAIN;
+
 const bodyDefault = `
         Thank you for registering at Tech Community,
         your account has been created and must be activated before you can use it 
@@ -17,7 +19,7 @@ const bodyDefault = `
  * @returns {object} {sent,error}
  */
 const sendToken = async (email, name, token, body = bodyDefault) => {
-  const link = `${process.env.DOMAIN}/api/v1/auth/verification/${token}`;
+  const link = `${DOMAIN}/api/v1/auth/verification/${token}`;
 
   try {
     const response = await mailer({

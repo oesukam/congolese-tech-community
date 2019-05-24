@@ -3,7 +3,7 @@ import { celebrate } from 'celebrate';
 import passport from '../../../config/passport';
 import AuthController from '../../../controllers/AuthController';
 import { authValidator } from './validators';
-import { asyncHandler } from '../../../middlewares';
+import { asyncHandler, checkUser, verifyToken } from '../../../middlewares';
 
 const router = express.Router();
 
@@ -39,6 +39,7 @@ router
 router
   .route('/signup')
   .post(
+    checkUser,
     celebrate({ body: authValidator.signup }),
     asyncHandler(AuthController.signup),
   );
@@ -52,6 +53,6 @@ router
 
 router
   .route('/verification/:token')
-  .get(asyncHandler(AuthController.verification));
+  .get(verifyToken, asyncHandler(AuthController.verification));
 
 export default router;
