@@ -6,12 +6,14 @@ module.exports = {
   coveragePathIgnorePatterns: [
     'node_modules',
     'coverage',
+    'src/seeders',
     'src/index.js',
     'src/app.js',
     'src/helpers/logger.js',
     'src/models/index.js',
     'src/middlewares/joiErrors.js',
-    'src/config/passport.js'
+    'src/middlewares/asyncHandler.js',
+    'src/config/passport.js',
   ],
   verbose: true,
   coverageThreshold: {
@@ -20,5 +22,8 @@ module.exports = {
       lines: 80,
       statements: -10,
     },
+  },
+  transform: {
+    '^.+\\.jsx?$': 'babel-jest',
   },
 };
