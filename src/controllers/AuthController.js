@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
 import User from '../models/User';
 import Person from '../models/Person';
 import { encrypt, sendMail } from '../helpers';
