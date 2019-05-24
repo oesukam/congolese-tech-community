@@ -1,7 +1,9 @@
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 import User from '../models/User';
 import Person from '../models/Person';
+import { encrypt, sendMail } from '../helpers';
+import Organization from '../models/Organization';
 
 dotenv.config();
 
@@ -37,9 +39,7 @@ class AuthController {
         .exec();
 
     const username = displayName.replace(/\s+/g, '') + id.substr(0, 5);
-    const token = jwt.sign({ email, username }, process.env.SECRET, {
-      expiresIn: '2d',
-    });
+    const token = encrypt.generateToken({ email, username });
 
     const exist = await Person.findOne().or([{ providerId: id }, { email }]);
 
@@ -104,6 +104,146 @@ class AuthController {
       email: user.emails ? user.emails[0].value : null,
       picture: user.photos[0].value,
     };
+  }
+
+  /**
+   * signup only for organizations
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} res
+   * @memberof Auth
+   */
+  static async signup(req, res) {
+    const hashedPassword = encrypt.hashPassword(req.body.password);
+    const { companyName, username, email } = req.body;
+
+    const ret = field =>
+      res.status(400).json({ message: `${field} already exist` });
+
+    const existUsername = await User.findOne({
+      username,
+    });
+    const existEmail = await User.findOne({
+      email,
+    });
+
+    if (existUsername) {
+      return ret('Username');
+    }
+    if (existEmail) {
+      return ret('Email');
+    }
+
+    const user = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+    });
+    const organization = await Organization.create({
+      name: companyName,
+      user: user.id,
+    });
+
+    const getUser = id =>
+      Organization.findById(id)
+        .populate('user')
+        .exec();
+
+    const result = await getUser(organization.id);
+
+    const token = encrypt.generateToken({ email, username });
+    if (process.env.NODE_ENV !== 'test') {
+      await sendMail(email, companyName, token);
+    }
+    return res.status(201).json({
+      user: result,
+      token,
+    });
+  }
+
+  /**
+   * login only for organizations
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} res
+   * @memberof Auth
+   */
+  static async login(req, res) {
+    const { username, password } = req.body;
+
+    const user = await User.findOne().or([{ username }, { email: username }]);
+
+    if (!user || !encrypt.comparePassword(user.password, password)) {
+      return res.status(401).json({
+        message: 'The credentials you provided are incorrect',
+      });
+    }
+
+    const token = encrypt.generateToken({ email: user.email, username });
+
+    if (!user.verified) {
+      if (process.env.NODE_ENV !== 'test') {
+        await sendMail(user.email, username, token);
+      }
+      return res.status(403).json({
+        message: 'Check your email for account verification',
+      });
+    }
+
+    const getUser = userId =>
+      Organization.findOne({ user: userId })
+        .populate('user')
+        .exec();
+
+    const result = await getUser(user.id);
+
+    return res.status(200).json({
+      user: result,
+      token,
+    });
+  }
+
+  /**
+   * verify the account from the email
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} res
+   * @memberof Auth
+   */
+  static async verification(req, res) {
+    try {
+      const { token } = req.params;
+      const jwtPayload = jwt.verify(token, process.env.SECRET);
+      // const user = await User.findOne().or([{ username }, { email: username }]);
+      const user = await User.findOne({
+        email: jwtPayload.email,
+      });
+      if (user.verified) {
+        return res.status(400).json({
+          status: 400,
+          message: 'Your account has already been verified',
+        });
+      }
+      await User.updateOne({ email: jwtPayload.email }, { verified: true });
+      return res.status(200).json({
+        message: 'Your account has been verified successfully',
+      });
+    } catch (err) {
+      let { message } = err;
+      if (message === 'jwt expired') {
+        message =
+          'Your verification email has expired, try to login to receive a new one';
+      }
+      return res.status(401).json({
+        message,
+      });
+    }
   }
 }
 

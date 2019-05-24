@@ -36,4 +36,10 @@ module.exports = {
     country: 'CD',
     city: 'Kinshasa',
   },
+  organization: {
+    companyName: 'company name',
+    username: 'company_name',
+    email: 'company@name.com',
+    password: 'CompanyName123',
+  },
 };

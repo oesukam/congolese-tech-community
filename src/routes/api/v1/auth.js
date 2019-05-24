@@ -1,7 +1,9 @@
 import express from 'express';
+import { celebrate } from 'celebrate';
 import passport from '../../../config/passport';
 import AuthController from '../../../controllers/AuthController';
-import asyncHandler from '../../../middlewares/asyncHandler';
+import { authValidator } from './validators';
+import { asyncHandler } from '../../../middlewares';
 
 const router = express.Router();
 
@@ -33,5 +35,23 @@ router
     passport.authenticate('github'),
     asyncHandler(AuthController.socialAuth),
   );
+
+router
+  .route('/signup')
+  .post(
+    celebrate({ body: authValidator.signup }),
+    asyncHandler(AuthController.signup),
+  );
+
+router
+  .route('/login')
+  .post(
+    celebrate({ body: authValidator.login }),
+    asyncHandler(AuthController.login),
+  );
+
+router
+  .route('/verification/:token')
+  .get(asyncHandler(AuthController.verification));
 
 export default router;

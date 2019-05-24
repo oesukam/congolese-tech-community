@@ -14,6 +14,8 @@ module.exports = {
     'src/middlewares/joiErrors.js',
     'src/middlewares/asyncHandler.js',
     'src/config/passport.js',
+    'src/helpers/sendMail.js',
+    'src/helpers/mailer.js',
   ],
   verbose: true,
   coverageThreshold: {
