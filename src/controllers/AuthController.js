@@ -3,6 +3,7 @@ import User from '../models/User';
 import Person from '../models/Person';
 import { encrypt, sendMail } from '../helpers';
 import Organization from '../models/Organization';
+import { CREATED, OK, BAD_REQUEST, FORBIDDEN } from '../constants/statusCodes';
 
 dotenv.config();
 
@@ -139,7 +140,8 @@ class AuthController {
     if (process.env.NODE_ENV !== 'test') {
       await sendMail(email, companyName, token);
     }
-    return res.status(201).json({
+    return res.status(CREATED).json({
+      status: CREATED,
       user: result,
       token,
     });
@@ -171,7 +173,8 @@ class AuthController {
       if (process.env.NODE_ENV !== 'test') {
         await sendMail(user.email, username, token);
       }
-      return res.status(403).json({
+      return res.status(FORBIDDEN).json({
+        status: FORBIDDEN,
         message: 'Check your email for account verification',
       });
     }
@@ -183,7 +186,8 @@ class AuthController {
 
     const result = await getUser(user.id);
 
-    return res.status(200).json({
+    return res.status(OK).json({
+      status: OK,
       user: result,
       token,
     });
@@ -204,13 +208,14 @@ class AuthController {
       email,
     });
     if (user.verified) {
-      return res.status(400).json({
-        status: 400,
+      return res.status(BAD_REQUEST).json({
+        status: BAD_REQUEST,
         message: 'Your account has already been verified',
       });
     }
     await User.updateOne({ email }, { verified: true });
-    return res.status(200).json({
+    return res.status(OK).json({
+      status: OK,
       message: 'Your account has been verified successfully',
     });
   }

@@ -39,7 +39,7 @@ describe('Organization auth', () => {
   describe('Email verification', () => {
     const { email, username } = organization;
     const token = encrypt.generateToken({ email, username });
-    test('should log the user in when the account is not verified', async () => {
+    test('should not log the user in when the account is not verified', async () => {
       const resp = await request(app)
         .post(`${urlPrefix}/auth/login`)
         .send({ username: 'company_name', password: 'CompanyName123' });

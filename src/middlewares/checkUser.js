@@ -6,7 +6,9 @@ const checkUser = async (req, res, next) => {
   const { email, username } = req.body;
 
   const ret = field =>
-    res.status(statusCodes.CONFLICT).json({ message: alreadyExist(field) });
+    res
+      .status(statusCodes.CONFLICT)
+      .json({ status: statusCodes.CONFLICT, message: alreadyExist(field) });
 
   const existUsername = await User.findOne({
     username,
