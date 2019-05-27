@@ -67,7 +67,7 @@ class AuthController {
       });
       status = CREATED;
     }
-    
+
     person = person || (await Person.findOne({ user: user.id }));
     user = await getUser(person.id);
 
@@ -141,9 +141,7 @@ class AuthController {
     const result = await getUser(organization.id);
 
     const token = encrypt.generateToken({ id: user._id });
-    if (process.env.NODE_ENV !== 'test') {
-      await sendMail(email, companyName, token);
-    }
+    sendMail(email, companyName, token);
 
     return res.status(CREATED).json({
       status: CREATED,
@@ -176,9 +174,7 @@ class AuthController {
     const token = encrypt.generateToken({ id: user.id });
 
     if (!user.verified) {
-      if (process.env.NODE_ENV !== 'test') {
-        await sendMail(user.email, username, token);
-      }
+      sendMail(user.email, username, token);
       return res.status(FORBIDDEN).json({
         status: FORBIDDEN,
         message: 'Check your email for account verification',
