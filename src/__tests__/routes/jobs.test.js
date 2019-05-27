@@ -1,115 +1,127 @@
 import request from 'supertest';
 import app from '../../app';
-import { postData } from '../../__mocks__/dummyData';
+import { jobData, jobCategoryData } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
-import { Token } from '../../models';
+import { Token, JobCategory } from '../../models';
 import * as statusCodes from '../../constants/statusCodes';
 
 let tokenData;
 let token;
-let postSlug;
-describe('posts', () => {
+let jobSlug;
+let jobCategory;
+describe('jobs', () => {
   beforeAll(async () => {
     tokenData = await Token.findOne({}).sort({ createdAt: -1 });
     token = `Bearer ${tokenData.token}`;
+    await JobCategory.updateOne(
+      { name: jobCategoryData.name },
+      jobCategoryData,
+      {
+        upsert: true,
+        setDefaultsOnInsert: true,
+      },
+    );
+    jobCategory = await JobCategory.findOne({ name: jobCategoryData.name });
+    jobData.category = jobCategory._id;
+    jobSlug = jobCategory.slug;
   });
 
   describe('create a post', () => {
     test('should return `Unauthorized access`', async () => {
       const res = await request(app)
-        .post(`${urlPrefix}/posts`)
-        .send(postData);
+        .post(`${urlPrefix}/jobs`)
+        .send(jobData);
       expect(res.status).toBe(statusCodes.UNAUTHORIZED);
       expect(res.body.message).toBe('Unauthorized access');
     });
 
     test('should return a `new post`', async () => {
       const res = await request(app)
-        .post(`${urlPrefix}/posts`)
+        .post(`${urlPrefix}/jobs`)
         .set('Authorization', token)
-        .send(postData);
+        .send(jobData);
       expect(res.status).toBe(statusCodes.OK);
-      expect(res.body.post).toHaveProperty('title');
+      expect(res.body.job).toHaveProperty('title');
     });
   });
 
   describe('update a post', () => {
     beforeAll(async () => {
       const res = await request(app)
-        .post(`${urlPrefix}/posts`)
+        .post(`${urlPrefix}/jobs`)
         .set('Authorization', token)
-        .send(postData);
-      postSlug = res.body.post.slug;
+        .send(jobData);
+      jobSlug = res.body.job.slug;
     });
 
     test('should return `Unauthorized access`', async () => {
       const res = await request(app)
-        .put(`${urlPrefix}/posts/${postSlug}`)
-        .send(postData);
+        .put(`${urlPrefix}/jobs/${jobSlug}`)
+        .send(jobData);
       expect(res.status).toBe(statusCodes.UNAUTHORIZED);
       expect(res.body.message).toBe('Unauthorized access');
     });
 
-    test('should return `Post does not exist`', async () => {
+    test('should return `Job does not exist`', async () => {
       const res = await request(app)
-        .put(`${urlPrefix}/posts/fake-post-slug`)
-        .send(postData);
+        .put(`${urlPrefix}/jobs/fake-post-slug`)
+        .send(jobData);
       expect(res.status).toBe(statusCodes.NOT_FOUND);
-      expect(res.body.message).toBe('Post does not exist');
+      expect(res.body.message).toBe('Job does not exist');
     });
 
     test('should return a `updated post`', async () => {
       const res = await request(app)
-        .put(`${urlPrefix}/posts/${postSlug}`)
+        .put(`${urlPrefix}/jobs/${jobSlug}`)
         .set('Authorization', token)
-        .send(postData);
+        .send(jobData);
       expect(res.status).toBe(statusCodes.OK);
-      expect(res.body.post).toHaveProperty('title');
+      expect(res.body.job).toHaveProperty('title');
     });
   });
 
   describe('retreive a post', () => {
     beforeAll(async () => {
       const res = await request(app)
-        .post(`${urlPrefix}/posts`)
+        .post(`${urlPrefix}/jobs`)
         .set('Authorization', token)
-        .send(postData);
-      postSlug = res.body.post.slug;
+        .send(jobData);
+      jobSlug = res.body.job.slug;
     });
 
-    test('should return `Post does not exist`', async () => {
-      const res = await request(app).get(`${urlPrefix}/posts/fake-post-slug`);
+    test('should return `Job does not exist`', async () => {
+      const res = await request(app).get(`${urlPrefix}/jobs/fake-post-slug`);
       expect(res.status).toBe(statusCodes.NOT_FOUND);
-      expect(res.body.message).toBe('Post does not exist');
+      expect(res.body.message).toBe('Job does not exist');
     });
 
     test('should return `a post`', async () => {
-      const res = await request(app).get(`${urlPrefix}/posts/${postSlug}`);
+      const res = await request(app).get(`${urlPrefix}/jobs/${jobSlug}`);
       expect(res.status).toBe(statusCodes.OK);
-      expect(res.body.post).toHaveProperty('title');
+      expect(res.body.job).toHaveProperty('title');
     });
   });
 
-  describe('retreive all posts', () => {
+  describe('retreive all jobs', () => {
     test('should return `Post array`', async () => {
-      const res = await request(app).get(`${urlPrefix}/posts`);
+      const res = await request(app).get(`${urlPrefix}/jobs`);
       expect(res.status).toBe(statusCodes.OK);
-      expect(res.body.posts).toBeDefined();
+      expect(res.body.jobs).toBeDefined();
     });
   });
 
   describe('delete a post', () => {
     test('should return `Unauthorized access`', async () => {
-      const res = await request(app).delete(`${urlPrefix}/posts/${postSlug}`);
+      const res = await request(app).delete(`${urlPrefix}/jobs/${jobSlug}`);
       expect(res.status).toBe(statusCodes.UNAUTHORIZED);
       expect(res.body.message).toBe('Unauthorized access');
     });
     test('should return `deleted post`', async () => {
       const res = await request(app)
-        .delete(`${urlPrefix}/posts/${postSlug}`)
+        .delete(`${urlPrefix}/jobs/${jobSlug}`)
         .set('Authorization', token);
       expect(res.status).toBe(statusCodes.OK);
-      expect(res.body.post).toHaveProperty('title');
+      expect(res.body.job).toHaveProperty('title');
     });
   });
 });

@@ -10,7 +10,6 @@ import logger from './helpers/logger';
 import { connectDb } from './models';
 import routes from './routes';
 
-
 const isProd = process.env.NODE_ENV === 'production';
 const app = express();
 const swaggerYAMLDocs = YAML.load('./docs/swagger.yml');
@@ -28,24 +27,24 @@ app.use(routes);
 app.use(joiErrors());
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerYAMLDocs));
 
-
-
-app.use((req, res) => {
-  const status = 404;
-  res.status(status).json({
-    message: 'Not found',
-    status,
-  });
-});
-
-app.use((err, req, res) => {
-  const status = err.status || 500;
-  res.status(status).json({
-    errors: {
-      message: err.message,
+if (isProd) {
+  app.use((req, res) => {
+    const status = 404;
+    res.status(status).json({
+      message: 'Not found',
       status,
-    },
+    });
   });
-});
+
+  app.use((err, req, res) => {
+    const status = err.status || 500;
+    res.status(status).json({
+      errors: {
+        message: err.message,
+        status,
+      },
+    });
+  });
+}
 
 export default app;
