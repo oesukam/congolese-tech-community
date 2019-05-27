@@ -53,6 +53,10 @@ const UserSchema = {
     type: String,
     default: 'active',
   },
+  userType: {
+    type: String,
+    default: 'user',
+  },
 };
 
 export default mongoose.model('User', UserSchema);
