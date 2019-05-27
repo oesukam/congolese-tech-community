@@ -33,7 +33,6 @@ describe('Social login', () => {
       {
         user: {
           ...user,
-          id: '3456790876854',
           name: { givenName: null, familyName: null },
           emails: null,
         },

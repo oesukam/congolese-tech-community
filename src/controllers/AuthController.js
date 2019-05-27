@@ -3,7 +3,13 @@ import User from '../models/User';
 import Person from '../models/Person';
 import { encrypt, sendMail } from '../helpers';
 import Organization from '../models/Organization';
-import { CREATED, OK, BAD_REQUEST, FORBIDDEN } from '../constants/statusCodes';
+import {
+  CREATED,
+  OK,
+  BAD_REQUEST,
+  FORBIDDEN,
+  UNAUTHORIZED,
+} from '../constants/statusCodes';
 
 dotenv.config();
 
@@ -39,12 +45,13 @@ class AuthController {
         .exec();
 
     const username = displayName.replace(/\s+/g, '') + id.substr(0, 5);
-    const token = encrypt.generateToken({ email, username });
 
-    const exist = await Person.findOne().or([{ providerId: id }, { email }]);
+    let person = await Person.findOne({ providerId: id });
+    let user = await User.findOne({ email });
+    let status = OK;
 
-    if (exist == null) {
-      const user = await User.create({
+    if (person == null && user == null) {
+      user = await User.create({
         username,
         email,
         picture,
@@ -52,25 +59,22 @@ class AuthController {
 
       const { givenName, familyName } = name;
 
-      const person = await Person.create({
+      person = await Person.create({
         providerId: id,
         firstName: givenName,
         lastName: familyName,
         user: user.id,
       });
-
-      const result = await getUser(person.id);
-
-      return res.status(201).json({
-        user: result,
-        token,
-      });
+      status = CREATED;
     }
+    
+    person = person || (await Person.findOne({ user: user.id }));
+    user = await getUser(person.id);
 
-    const result = await getUser(exist.id);
+    const token = encrypt.generateToken({ id: user.id });
 
-    return res.status(200).json({
-      user: result,
+    return res.status(status).json({
+      user,
       token,
     });
   }
@@ -136,10 +140,11 @@ class AuthController {
 
     const result = await getUser(organization.id);
 
-    const token = encrypt.generateToken({ email, username });
+    const token = encrypt.generateToken({ id: user._id });
     if (process.env.NODE_ENV !== 'test') {
       await sendMail(email, companyName, token);
     }
+
     return res.status(CREATED).json({
       status: CREATED,
       user: result,
@@ -162,12 +167,13 @@ class AuthController {
     const user = await User.findOne().or([{ username }, { email: username }]);
 
     if (!user || !encrypt.comparePassword(user.password, password)) {
-      return res.status(401).json({
+      return res.status(UNAUTHORIZED).json({
+        status: UNAUTHORIZED,
         message: 'The credentials you provided are incorrect',
       });
     }
 
-    const token = encrypt.generateToken({ email: user.email, username });
+    const token = encrypt.generateToken({ id: user.id });
 
     if (!user.verified) {
       if (process.env.NODE_ENV !== 'test') {
@@ -203,17 +209,18 @@ class AuthController {
    * @memberof Auth
    */
   static async verification(req, res) {
-    const { email } = req.jwtPayload;
+    const { id } = req.jwtPayload;
     const user = await User.findOne({
-      email,
+      _id: id,
     });
+
     if (user.verified) {
       return res.status(BAD_REQUEST).json({
         status: BAD_REQUEST,
         message: 'Your account has already been verified',
       });
     }
-    await User.updateOne({ email }, { verified: true });
+    await User.updateOne({ _id: id }, { verified: true });
     return res.status(OK).json({
       status: OK,
       message: 'Your account has been verified successfully',
