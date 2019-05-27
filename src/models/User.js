@@ -57,6 +57,10 @@ const UserSchema = {
     type: String,
     default: 'user',
   },
+  verified: {
+    type: Boolean,
+    default: false,
+  },
 };
 
 export default mongoose.model('User', UserSchema);

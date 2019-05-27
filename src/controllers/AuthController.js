@@ -1,7 +1,15 @@
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import User from '../models/User';
 import Person from '../models/Person';
+import { encrypt, sendMail } from '../helpers';
+import Organization from '../models/Organization';
+import {
+  CREATED,
+  OK,
+  BAD_REQUEST,
+  FORBIDDEN,
+  UNAUTHORIZED,
+} from '../constants/statusCodes';
 
 dotenv.config();
 
@@ -37,14 +45,13 @@ class AuthController {
         .exec();
 
     const username = displayName.replace(/\s+/g, '') + id.substr(0, 5);
-    const token = jwt.sign({ email, username }, process.env.SECRET, {
-      expiresIn: '2d',
-    });
 
-    const exist = await Person.findOne().or([{ providerId: id }, { email }]);
+    let person = await Person.findOne({ providerId: id });
+    let user = await User.findOne({ email });
+    let status = OK;
 
-    if (exist == null) {
-      const user = await User.create({
+    if (person == null && user == null) {
+      user = await User.create({
         username,
         email,
         picture,
@@ -52,25 +59,22 @@ class AuthController {
 
       const { givenName, familyName } = name;
 
-      const person = await Person.create({
+      person = await Person.create({
         providerId: id,
         firstName: givenName,
         lastName: familyName,
         user: user.id,
       });
-
-      const result = await getUser(person.id);
-
-      return res.status(201).json({
-        user: result,
-        token,
-      });
+      status = CREATED;
     }
 
-    const result = await getUser(exist.id);
+    person = person || (await Person.findOne({ user: user.id }));
+    user = await getUser(person.id);
 
-    return res.status(200).json({
-      user: result,
+    const token = encrypt.generateToken({ id: user.id });
+
+    return res.status(status).json({
+      user,
       token,
     });
   }
@@ -104,6 +108,119 @@ class AuthController {
       email: user.emails ? user.emails[0].value : null,
       picture: user.photos[0].value,
     };
+  }
+
+  /**
+   * signup only for organizations
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} res
+   * @memberof Auth
+   */
+  static async signup(req, res) {
+    const hashedPassword = encrypt.hashPassword(req.body.password);
+    const { companyName, username, email } = req.body;
+
+    const user = await User.create({
+      username,
+      email,
+      password: hashedPassword,
+    });
+    const organization = await Organization.create({
+      name: companyName,
+      user: user.id,
+    });
+
+    const getUser = id =>
+      Organization.findById(id)
+        .populate('user')
+        .exec();
+
+    const result = await getUser(organization.id);
+
+    const token = encrypt.generateToken({ id: user._id });
+    sendMail(email, companyName, token);
+
+    return res.status(CREATED).json({
+      status: CREATED,
+      user: result,
+      token,
+    });
+  }
+
+  /**
+   * login only for organizations
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} res
+   * @memberof Auth
+   */
+  static async login(req, res) {
+    const { username, password } = req.body;
+
+    const user = await User.findOne().or([{ username }, { email: username }]);
+
+    if (!user || !encrypt.comparePassword(user.password, password)) {
+      return res.status(UNAUTHORIZED).json({
+        status: UNAUTHORIZED,
+        message: 'The credentials you provided are incorrect',
+      });
+    }
+
+    const token = encrypt.generateToken({ id: user.id });
+
+    if (!user.verified) {
+      sendMail(user.email, username, token);
+      return res.status(FORBIDDEN).json({
+        status: FORBIDDEN,
+        message: 'Check your email for account verification',
+      });
+    }
+
+    const getUser = userId =>
+      Organization.findOne({ user: userId })
+        .populate('user')
+        .exec();
+
+    const result = await getUser(user.id);
+
+    return res.status(OK).json({
+      status: OK,
+      user: result,
+      token,
+    });
+  }
+
+  /**
+   * verify the account from the email
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} res
+   * @memberof Auth
+   */
+  static async verification(req, res) {
+    const { id } = req.jwtPayload;
+    const user = await User.findOne({
+      _id: id,
+    });
+
+    if (user.verified) {
+      return res.status(BAD_REQUEST).json({
+        status: BAD_REQUEST,
+        message: 'Your account has already been verified',
+      });
+    }
+    await User.updateOne({ _id: id }, { verified: true });
+    return res.status(OK).json({
+      status: OK,
+      message: 'Your account has been verified successfully',
+    });
   }
 }
 

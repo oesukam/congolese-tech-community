@@ -7,4 +7,5 @@ export const updated = resource => general(resource, 'updated');
 
 export const exist = resource => `${resource} already exists`;
 export const notExist = resource => `${resource} does not exist`;
+export const alreadyExist = resource => `${resource} already exist`;
 export const unauthorized = () => 'Unauthorized access';
