@@ -3,6 +3,7 @@ import app from '../../app';
 import { jobData, jobCategoryData } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
 import { Token, JobCategory } from '../../models';
+import * as statusCodes from '../../constants/statusCodes';
 
 let tokenData;
 let token;
@@ -30,7 +31,7 @@ describe('jobs', () => {
       const res = await request(app)
         .post(`${urlPrefix}/jobs`)
         .send(jobData);
-      expect(res.status).toBe(401);
+      expect(res.status).toBe(statusCodes.UNAUTHORIZED);
       expect(res.body.message).toBe('Unauthorized access');
     });
 
@@ -39,7 +40,7 @@ describe('jobs', () => {
         .post(`${urlPrefix}/jobs`)
         .set('Authorization', token)
         .send(jobData);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(statusCodes.OK);
       expect(res.body.job).toHaveProperty('title');
     });
   });
@@ -57,7 +58,7 @@ describe('jobs', () => {
       const res = await request(app)
         .put(`${urlPrefix}/jobs/${jobSlug}`)
         .send(jobData);
-      expect(res.status).toBe(401);
+      expect(res.status).toBe(statusCodes.UNAUTHORIZED);
       expect(res.body.message).toBe('Unauthorized access');
     });
 
@@ -65,7 +66,7 @@ describe('jobs', () => {
       const res = await request(app)
         .put(`${urlPrefix}/jobs/fake-post-slug`)
         .send(jobData);
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(statusCodes.NOT_FOUND);
       expect(res.body.message).toBe('Job does not exist');
     });
 
@@ -74,7 +75,7 @@ describe('jobs', () => {
         .put(`${urlPrefix}/jobs/${jobSlug}`)
         .set('Authorization', token)
         .send(jobData);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(statusCodes.OK);
       expect(res.body.job).toHaveProperty('title');
     });
   });
@@ -90,13 +91,13 @@ describe('jobs', () => {
 
     test('should return `Job does not exist`', async () => {
       const res = await request(app).get(`${urlPrefix}/jobs/fake-post-slug`);
-      expect(res.status).toBe(404);
+      expect(res.status).toBe(statusCodes.NOT_FOUND);
       expect(res.body.message).toBe('Job does not exist');
     });
 
     test('should return `a post`', async () => {
       const res = await request(app).get(`${urlPrefix}/jobs/${jobSlug}`);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(statusCodes.OK);
       expect(res.body.job).toHaveProperty('title');
     });
   });
@@ -104,7 +105,7 @@ describe('jobs', () => {
   describe('retreive all jobs', () => {
     test('should return `Post array`', async () => {
       const res = await request(app).get(`${urlPrefix}/jobs`);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(statusCodes.OK);
       expect(res.body.jobs).toBeDefined();
     });
   });
@@ -112,14 +113,14 @@ describe('jobs', () => {
   describe('delete a post', () => {
     test('should return `Unauthorized access`', async () => {
       const res = await request(app).delete(`${urlPrefix}/jobs/${jobSlug}`);
-      expect(res.status).toBe(401);
+      expect(res.status).toBe(statusCodes.UNAUTHORIZED);
       expect(res.body.message).toBe('Unauthorized access');
     });
     test('should return `deleted post`', async () => {
       const res = await request(app)
         .delete(`${urlPrefix}/jobs/${jobSlug}`)
         .set('Authorization', token);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(statusCodes.OK);
       expect(res.body.job).toHaveProperty('title');
     });
   });
