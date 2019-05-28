@@ -2,17 +2,17 @@ import request from 'supertest';
 import app from '../../app';
 import { jobData, jobCategoryData } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
-import { Token, JobCategory } from '../../models';
+import { JobCategory } from '../../models';
 import * as statusCodes from '../../constants/statusCodes';
+import { getToken } from './jobCategories.test';
 
-let tokenData;
 let token;
 let jobSlug;
 let jobCategory;
 describe('jobs', () => {
   beforeAll(async () => {
-    tokenData = await Token.findOne({}).sort({ createdAt: -1 });
-    token = `Bearer ${tokenData.token}`;
+    token = await getToken();
+
     await JobCategory.updateOne(
       { name: jobCategoryData.name },
       jobCategoryData,

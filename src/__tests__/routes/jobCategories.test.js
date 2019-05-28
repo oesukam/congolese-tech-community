@@ -2,17 +2,24 @@ import request from 'supertest';
 import app from '../../app';
 import { jobData, jobCategoryData } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
-import { Token, JobCategory } from '../../models';
+import { User, JobCategory } from '../../models';
+import encrypt from '../../helpers/encrypt';
 import * as statusCodes from '../../constants/statusCodes';
 
-let tokenData;
-let token;
+export const getToken = async () => {
+  const result = await User.findOne({ userType: 'admin' });
+  const token = await encrypt.generateToken(result._id);
+  return `Bearer ${token}`;
+}
+
 let jobCategory;
+let token;
 describe('jobCategories', () => {
   beforeAll(async () => {
     await JobCategory.deleteMany({});
-    tokenData = await Token.findOne({}).sort({ createdAt: -1 });
-    token = `Bearer ${tokenData.token}`;
+
+    token = await getToken();
+
     await JobCategory.updateOne(
       { name: jobCategoryData.name },
       jobCategoryData,
@@ -76,13 +83,13 @@ describe('jobCategories', () => {
 
   describe('retreive a job category', () => {
     test('should return `Job Category does not exist`', async () => {
-      const res = await request(app).get(`${urlPrefix}/jobs/categories/fake-post-slug`,);
+      const res = await request(app).get(`${urlPrefix}/jobs/categories/fake-post-slug`);
       expect(res.status).toBe(statusCodes.NOT_FOUND);
       expect(res.body.message).toBe('Job Category does not exist');
     });
 
     test('should return `a job category`', async () => {
-      const res = await request(app).get(`${urlPrefix}/jobs/categories/${jobCategory.slug}`,);
+      const res = await request(app).get(`${urlPrefix}/jobs/categories/${jobCategory.slug}`);
       expect(res.status).toBe(statusCodes.OK);
       expect(res.body.jobCategory).toHaveProperty('name');
     });
@@ -98,7 +105,7 @@ describe('jobCategories', () => {
 
   describe('delete a job category', () => {
     test('should return `Unauthorized access`', async () => {
-      const res = await request(app).delete(`${urlPrefix}/jobs/categories/${jobCategory.slug}`,);
+      const res = await request(app).delete(`${urlPrefix}/jobs/categories/${jobCategory.slug}`);
       expect(res.status).toBe(statusCodes.UNAUTHORIZED);
       expect(res.body.message).toBe('Unauthorized access');
     });

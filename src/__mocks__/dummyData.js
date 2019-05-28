@@ -42,4 +42,10 @@ module.exports = {
     email: 'company@name.com',
     password: 'CompanyName123',
   },
+  organizationUser: {
+    companyName: 'company name',
+    username: 'company_name_user',
+    email: 'company_user@name.com',
+    password: 'CompanyName123',
+  },
 };

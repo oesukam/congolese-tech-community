@@ -9,5 +9,6 @@ export default [
     userType: 'admin',
     country: 'CD',
     city: 'Kinshasa',
+    verified: true,
   },
 ];

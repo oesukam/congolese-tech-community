@@ -1,4 +1,4 @@
-import { Chat, User } from '../models';
+import { Chat } from '../models';
 import { statusCodes } from '../constants';
 
 /**
@@ -20,13 +20,12 @@ export default class ChatController {
      * @memberof ChatController
      */
     static async send(req, res) {
-        const { username } = req.params;
         const { body } = req.body;
         const { currentUser } = req;
 
-        const { id } = await User.findOne({ username });
+        const { id } = req.receiver;
 
-        const chat = Chat.create({
+        const chat = await Chat.create({
             body,
             sender: currentUser.id,
             receiver: id,
@@ -35,6 +34,29 @@ export default class ChatController {
         return res.status(statusCodes.OK).json({
             status: statusCodes.OK,
             chat,
+        });
+
+    }
+
+    /**
+     * Gets the current user
+     * chats
+     *
+     * @author Grace Lungu
+     * @static
+     * @param {*} req
+     * @param {*} res
+     * @returns {array} chats
+     * @memberof ChatController
+     */
+    static async getUserChats(req, res) {
+        const { id } = req.receiver;
+
+        const chats = await Chat.find().or([{ sender: id }, { receiver: id }]);
+
+        return res.status(statusCodes.OK).json({
+            status: statusCodes.OK,
+            chats,
         });
 
     }

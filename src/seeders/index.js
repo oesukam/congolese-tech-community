@@ -1,16 +1,16 @@
-import bcrypt from 'bcrypt';
 import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import { logger } from '../helpers';
 import { connectDb, User, Token } from '../models';
 import users from './users';
+import encrypt from '../helpers/encrypt';
 
 const { JWT_SECRET } = process.env;
 
 const seedUsers = async () => {
   return new Promise(resolve => {
     users.forEach(async (val, index) => {
-      const password = bcrypt.hashSync('123456', 10);
+      const password = encrypt.hashPassword('Admin123456');
       await User.updateOne(
         { email: val.email },
         { ...val, password },
