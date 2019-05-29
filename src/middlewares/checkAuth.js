@@ -34,6 +34,7 @@ const checkAuth = async (req, res, next) => {
     user = await User.findOne(
       {
         _id: decoded._id,
+        status: 'active'
       },
       { password: 0 },
     );
