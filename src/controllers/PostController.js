@@ -43,7 +43,7 @@ export default class PostController {
   static async updatePost(req, res) {
     const { currentUser, body, post } = req;
 
-    if (!currentUser._id.equals(post.author._id)) {
+    if (!currentUser._id.equals(post.author && post.author._id)) {
       return res.status(statusCodes.UNAUTHORIZED).json({
         status: statusCodes.UNAUTHORIZED,
         message: responseMessages.unauthorized(),
@@ -69,7 +69,7 @@ export default class PostController {
   static async deletePost(req, res) {
     const { currentUser, post } = req;
 
-    if (!currentUser._id.equals(post.author._id)) {
+    if (!currentUser._id.equals(post.author && post.author._id)) {
       return res.status(statusCodes.UNAUTHORIZED).json({
         status: statusCodes.UNAUTHORIZED,
         post,

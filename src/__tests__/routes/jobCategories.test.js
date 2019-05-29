@@ -2,24 +2,21 @@ import request from 'supertest';
 import app from '../../app';
 import { jobData, jobCategoryData } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
-import { User, JobCategory } from '../../models';
-import encrypt from '../../helpers/encrypt';
+import { User, Token, JobCategory } from '../../models';
 import * as statusCodes from '../../constants/statusCodes';
 
-export const getToken = async () => {
-  const result = await User.findOne({ userType: 'admin' });
-  const token = await encrypt.generateToken(result._id);
-  return `Bearer ${token}`;
-}
-
-let jobCategory;
+let tokenData;
 let token;
+let jobCategory;
+let user;
 describe('jobCategories', () => {
   beforeAll(async () => {
     await JobCategory.deleteMany({});
-
-    token = await getToken();
-
+    user = await User.findOne({ username: 'admin' });
+    tokenData = await Token.findOne({ _userId: user._id }).sort({
+      createdAt: -1,
+    });
+    token = `Bearer ${tokenData.token}`;
     await JobCategory.updateOne(
       { name: jobCategoryData.name },
       jobCategoryData,

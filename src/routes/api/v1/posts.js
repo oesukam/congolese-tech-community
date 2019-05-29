@@ -21,7 +21,7 @@ router
   .get(asyncHandler(PostController.getPost))
   .put(
     checkAuth,
-    celebrate({ body: postValidator.createPost }),
+    celebrate({ body: postValidator.updatePost }),
     asyncHandler(PostController.updatePost),
   )
   .delete(checkAuth, asyncHandler(PostController.deletePost));

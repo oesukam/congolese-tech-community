@@ -2,16 +2,23 @@ import request from 'supertest';
 import app from '../../app';
 import { postData } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
-import { Token } from '../../models';
+import { User, Token, Post } from '../../models';
 import * as statusCodes from '../../constants/statusCodes';
+import slugString from '../../helpers/slugString';
 
 let tokenData;
 let token;
 let postSlug;
+let post;
+let user;
 describe('posts', () => {
   beforeAll(async () => {
-    tokenData = await Token.findOne({}).sort({ createdAt: -1 });
+    user = await User.findOne({ username: 'admin' });
+    tokenData = await Token.findOne({ _userId: user._id }).sort({
+      createdAt: -1,
+    });
     token = `Bearer ${tokenData.token}`;
+    post = await Post.create({ ...postData, slug: slugString('Test') });
   });
 
   describe('create a post', () => {
@@ -45,6 +52,15 @@ describe('posts', () => {
     test('should return `Unauthorized access`', async () => {
       const res = await request(app)
         .put(`${urlPrefix}/posts/${postSlug}`)
+        .send(postData);
+      expect(res.status).toBe(statusCodes.UNAUTHORIZED);
+      expect(res.body.message).toBe('Unauthorized access');
+    });
+
+    test('should return `Unauthorized access`', async () => {
+      const res = await request(app)
+        .put(`${urlPrefix}/posts/${post.slug}`)
+        .set('Authorization', token)
         .send(postData);
       expect(res.status).toBe(statusCodes.UNAUTHORIZED);
       expect(res.body.message).toBe('Unauthorized access');
@@ -104,6 +120,15 @@ describe('posts', () => {
       expect(res.status).toBe(statusCodes.UNAUTHORIZED);
       expect(res.body.message).toBe('Unauthorized access');
     });
+
+    test('should return `Unauthorized access`', async () => {
+      const res = await request(app)
+        .delete(`${urlPrefix}/posts/${post.slug}`)
+        .set('Authorization', token);
+      expect(res.status).toBe(statusCodes.UNAUTHORIZED);
+      expect(res.body.message).toBe('Unauthorized access');
+    });
+
     test('should return `deleted post`', async () => {
       const res = await request(app)
         .delete(`${urlPrefix}/posts/${postSlug}`)

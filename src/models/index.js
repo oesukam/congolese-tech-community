@@ -10,6 +10,7 @@ const connectDb = () => {
     return mongoose.connect(URL, {
       useNewUrlParser: true,
       useCreateIndex: true,
+      useFindAndModify: false,
     });
   } catch (err) {
     logger.error(err.message);
