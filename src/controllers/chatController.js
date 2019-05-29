@@ -1,6 +1,6 @@
 import { Chat } from '../models';
 import { statusCodes } from '../constants';
-import '../emiters/messageNotifier';
+import notifier from '../helpers/notifier';
 
 /**
  * Handles chat controllers
@@ -31,6 +31,8 @@ export default class ChatController {
             sender: currentUser.id,
             receiver: id,
         });
+
+        notifier(currentUser.username, chat, req.app.io)
 
         return res.status(statusCodes.OK).json({
             status: statusCodes.OK,
