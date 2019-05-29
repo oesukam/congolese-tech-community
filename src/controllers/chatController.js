@@ -1,5 +1,6 @@
 import { Chat } from '../models';
 import { statusCodes } from '../constants';
+import '../emiters/messageNotifier';
 
 /**
  * Handles chat controllers
