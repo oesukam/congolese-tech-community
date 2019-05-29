@@ -10,7 +10,9 @@
     "start": "babel-node src/index.js",
     "lint": "node_modules/.bin/eslint .",
     "lint:fix": "prettier-eslint --write '**/*.js'",
-    "seed": "babel-node src/seeders/index.js"
+    "seed": "babel-node src/seeders/index.js",
+    "drop": "babel-node src/seeders/dropCollections.js",
+    "drop:test": "NODE_ENV=test npm run drop"
   },
   "repository": {
     "type": "git",

@@ -12,6 +12,10 @@ const personProjectSchema = new Schema({
   to: {
     type: Date,
   },
+  title: {
+    type: String,
+    required: true,
+  },
   owner: {
     type: String,
     required: true,

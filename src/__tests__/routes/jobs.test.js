@@ -2,16 +2,22 @@ import request from 'supertest';
 import app from '../../app';
 import { jobData, jobCategoryData } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
-import { Token, JobCategory } from '../../models';
+import { User, Token, JobCategory, Job } from '../../models';
 import * as statusCodes from '../../constants/statusCodes';
+import slugString from '../../helpers/slugString';
 
 let tokenData;
 let token;
 let jobSlug;
 let jobCategory;
+let job;
+let user;
 describe('jobs', () => {
   beforeAll(async () => {
-    tokenData = await Token.findOne({}).sort({ createdAt: -1 });
+    user = await User.findOne({ username: 'admin' });
+    tokenData = await Token.findOne({ _userId: user._id }).sort({
+      createdAt: -1,
+    });
     token = `Bearer ${tokenData.token}`;
     await JobCategory.updateOne(
       { name: jobCategoryData.name },
@@ -24,6 +30,7 @@ describe('jobs', () => {
     jobCategory = await JobCategory.findOne({ name: jobCategoryData.name });
     jobData.category = jobCategory._id;
     jobSlug = jobCategory.slug;
+    job = await Job.create({ ...jobData, slug: slugString('job') });
   });
 
   describe('create a post', () => {
@@ -57,6 +64,15 @@ describe('jobs', () => {
     test('should return `Unauthorized access`', async () => {
       const res = await request(app)
         .put(`${urlPrefix}/jobs/${jobSlug}`)
+        .send(jobData);
+      expect(res.status).toBe(statusCodes.UNAUTHORIZED);
+      expect(res.body.message).toBe('Unauthorized access');
+    });
+
+    test('should return `Unauthorized access`', async () => {
+      const res = await request(app)
+        .put(`${urlPrefix}/jobs/${job.slug}`)
+        .set('Authorization', token)
         .send(jobData);
       expect(res.status).toBe(statusCodes.UNAUTHORIZED);
       expect(res.body.message).toBe('Unauthorized access');
@@ -113,6 +129,14 @@ describe('jobs', () => {
   describe('delete a post', () => {
     test('should return `Unauthorized access`', async () => {
       const res = await request(app).delete(`${urlPrefix}/jobs/${jobSlug}`);
+      expect(res.status).toBe(statusCodes.UNAUTHORIZED);
+      expect(res.body.message).toBe('Unauthorized access');
+    });
+
+    test('should return `Unauthorized access`', async () => {
+      const res = await request(app)
+        .delete(`${urlPrefix}/jobs/${job.slug}`)
+        .set('Authorization', token);
       expect(res.status).toBe(statusCodes.UNAUTHORIZED);
       expect(res.body.message).toBe('Unauthorized access');
     });

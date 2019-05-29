@@ -1,115 +1,70 @@
 import request from 'supertest';
 import app from '../../app';
-import { postData } from '../../__mocks__/dummyData';
+import { profileData } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
 import { Token } from '../../models';
 import * as statusCodes from '../../constants/statusCodes';
+import User from '../../models/User';
 
 let tokenData;
 let token;
-let postSlug;
-describe('posts', () => {
+const username = 'admin';
+let user;
+describe('profiles', () => {
   beforeAll(async () => {
-    tokenData = await Token.findOne({}).sort({ createdAt: -1 });
+    user = await User.findOne({ username });
+    tokenData = await Token.findOne({ _userId: user._id }).sort({
+      createdAt: -1,
+    });
     token = `Bearer ${tokenData.token}`;
   });
 
-  describe('create a post', () => {
+  describe('update a profile', () => {
     test('should return `Unauthorized access`', async () => {
       const res = await request(app)
-        .post(`${urlPrefix}/posts`)
-        .send(postData);
+        .put(`${urlPrefix}/profiles/${username}`)
+        .send(profileData);
       expect(res.status).toBe(statusCodes.UNAUTHORIZED);
       expect(res.body.message).toBe('Unauthorized access');
     });
 
-    test('should return a `new post`', async () => {
+    test('should return `Profile does not exist`', async () => {
       const res = await request(app)
-        .post(`${urlPrefix}/posts`)
-        .set('Authorization', token)
-        .send(postData);
-      expect(res.status).toBe(statusCodes.OK);
-      expect(res.body.post).toHaveProperty('title');
-    });
-  });
-
-  describe('update a post', () => {
-    beforeAll(async () => {
-      const res = await request(app)
-        .post(`${urlPrefix}/posts`)
-        .set('Authorization', token)
-        .send(postData);
-      postSlug = res.body.post.slug;
-    });
-
-    test('should return `Unauthorized access`', async () => {
-      const res = await request(app)
-        .put(`${urlPrefix}/posts/${postSlug}`)
-        .send(postData);
-      expect(res.status).toBe(statusCodes.UNAUTHORIZED);
-      expect(res.body.message).toBe('Unauthorized access');
-    });
-
-    test('should return `Post does not exist`', async () => {
-      const res = await request(app)
-        .put(`${urlPrefix}/posts/fake-post-slug`)
-        .send(postData);
+        .put(`${urlPrefix}/profiles/fake-username`)
+        .send(profileData);
       expect(res.status).toBe(statusCodes.NOT_FOUND);
-      expect(res.body.message).toBe('Post does not exist');
+      expect(res.body.message).toBe('Profile does not exist');
     });
 
-    test('should return a `updated post`', async () => {
+    test('should return a `updated profile`', async () => {
       const res = await request(app)
-        .put(`${urlPrefix}/posts/${postSlug}`)
+        .put(`${urlPrefix}/profiles/${username}`)
         .set('Authorization', token)
-        .send(postData);
+        .send(profileData);
       expect(res.status).toBe(statusCodes.OK);
-      expect(res.body.post).toHaveProperty('title');
+      expect(res.body.profile).toHaveProperty('username');
     });
   });
 
-  describe('retreive a post', () => {
-    beforeAll(async () => {
-      const res = await request(app)
-        .post(`${urlPrefix}/posts`)
-        .set('Authorization', token)
-        .send(postData);
-      postSlug = res.body.post.slug;
-    });
-
-    test('should return `Post does not exist`', async () => {
-      const res = await request(app).get(`${urlPrefix}/posts/fake-post-slug`);
+  describe('retreive a profile', () => {
+    test('should return `Profile does not exist`', async () => {
+      const res = await request(app).get(`${urlPrefix}/profiles/fake-username`);
       expect(res.status).toBe(statusCodes.NOT_FOUND);
-      expect(res.body.message).toBe('Post does not exist');
+      expect(res.body.message).toBe('Profile does not exist');
     });
 
-    test('should return `a post`', async () => {
-      const res = await request(app).get(`${urlPrefix}/posts/${postSlug}`);
+    test('should return `a profile`', async () => {
+      const res = await request(app).get(`${urlPrefix}/profiles/${username}`);
       expect(res.status).toBe(statusCodes.OK);
-      expect(res.body.post).toHaveProperty('title');
+      expect(res.body.profile).toHaveProperty('username');
     });
   });
 
-  describe('retreive all posts', () => {
-    test('should return `Post array`', async () => {
-      const res = await request(app).get(`${urlPrefix}/posts`);
+  describe('retreive all profiles', () => {
+    test('should return `Profile array`', async () => {
+      const res = await request(app).get(`${urlPrefix}/profiles`);
       expect(res.status).toBe(statusCodes.OK);
-      expect(res.body.posts).toBeDefined();
-    });
-  });
-
-  describe('delete a post', () => {
-    test('should return `Unauthorized access`', async () => {
-      const res = await request(app).delete(`${urlPrefix}/posts/${postSlug}`);
-      expect(res.status).toBe(statusCodes.UNAUTHORIZED);
-      expect(res.body.message).toBe('Unauthorized access');
-    });
-    test('should return `deleted post`', async () => {
-      const res = await request(app)
-        .delete(`${urlPrefix}/posts/${postSlug}`)
-        .set('Authorization', token);
-      expect(res.status).toBe(statusCodes.OK);
-      expect(res.body.post).toHaveProperty('title');
+      expect(res.body.profiles).toBeDefined();
     });
   });
 });

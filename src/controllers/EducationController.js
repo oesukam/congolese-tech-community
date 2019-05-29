@@ -79,10 +79,7 @@ export default class EducationController {
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
-      personEducation: {
-        ...personEducation.toObject(),
-        ...body,
-      },
+      personEducation,
       message: responseMessages.deleted('Education'),
     });
   }

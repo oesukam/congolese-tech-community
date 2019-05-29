@@ -23,23 +23,17 @@ export default class ProfileController {
       });
     }
 
-    const person = await Person.findOneAndUpdate(
-      { user: currentUser._id },
-      body,
-      {
-        upsert: true,
-        lean: true,
-      },
-    );
+    const person = await Person.updateOne({ user: currentUser._id }, body, {
+      upsert: true,
+    });
 
-    await currentUser.updateOne({ info: person._id });
+    if (!currentUser.info) {
+      await currentUser.updateOne({ info: person.upserted[0]._id });
+    }
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
-      profile: {
-        ...profile.toObject(),
-        info: person,
-      },
+      profile,
       message: responseMessages.created('Profile'),
     });
   }
