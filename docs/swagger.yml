@@ -269,11 +269,16 @@ paths:
         - name: Authorization
           in: header
           required: true
+        - in: "body"
+          name: "body"
+          description: "Contains message body"
+          required: true
           schema:
             type: "object"
             properties:
                 body:
                   type: "string"
+        
       responses:
         '200':
           description: return chat array
