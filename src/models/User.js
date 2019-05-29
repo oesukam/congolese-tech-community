@@ -1,6 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate';
 
-const UserSchema = {
+const UserSchema = new Schema({
   username: {
     type: String,
     required: true,
@@ -23,6 +24,9 @@ const UserSchema = {
   country: {
     type: String,
   },
+  province: {
+    type: String,
+  },
   city: {
     type: String,
   },
@@ -41,14 +45,6 @@ const UserSchema = {
   linkedIn: {
     type: String,
   },
-  createdAt: {
-    type: Date,
-    default: new Date(),
-  },
-  updatedAt: {
-    type: Date,
-    default: null,
-  },
   status: {
     type: String,
     default: 'active',
@@ -61,6 +57,20 @@ const UserSchema = {
     type: Boolean,
     default: false,
   },
-};
+  info: {
+    type: Schema.Types.ObjectId,
+    ref: 'Person',
+  },
+  createdAt: {
+    type: Date,
+    default: new Date(),
+  },
+  updatedAt: {
+    type: Date,
+    default: null,
+  },
+});
+
+UserSchema.plugin(mongoosePaginate);
 
 export default mongoose.model('User', UserSchema);

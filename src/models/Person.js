@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 
-const personalSchema = {
+const personSchema = new Schema({
   providerId: {
     type: String,
     required: true,
@@ -27,7 +27,15 @@ const personalSchema = {
   bio: {
     type: String,
   },
+  languages: {
+    type: [String],
+  },
+  skills: {
+    type: [String],
+  },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
-};
+  educations: [{ type: Schema.Types.ObjectId, ref: 'PersonEducation' }],
+  experiences: [{ type: Schema.Types.ObjectId, ref: 'PersonExperience' }],
+});
 
-export default mongoose.model('Person', personalSchema);
+export default mongoose.model('Person', personSchema);

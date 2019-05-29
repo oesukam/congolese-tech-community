@@ -1,0 +1,94 @@
+import { User, Person } from '../models';
+import { statusCodes, responseMessages } from '../constants';
+import { PAGE_LIMIT } from '../constants/shared';
+
+/**
+ * @description Profile Controller class
+ */
+export default class ProfileController {
+  /**
+   * @author Olivier
+   * @param {Object} req
+   * @param {Object} res
+   * @param {*} next
+   * @returns {Object} Returns the response
+   */
+  static async updateProfile(req, res) {
+    const { currentUser, body, profile } = req;
+
+    if (currentUser.username !== profile.username) {
+      return res.status(statusCodes.UNAUTHORIZED).json({
+        status: statusCodes.UNAUTHORIZED,
+        message: responseMessages.unauthorized(),
+      });
+    }
+
+    const person = await Person.findOneAndUpdate(
+      { user: currentUser._id },
+      body,
+      {
+        upsert: true,
+        lean: true,
+      },
+    );
+
+    await currentUser.updateOne({ info: person._id });
+
+    return res.status(statusCodes.OK).json({
+      status: statusCodes.OK,
+      profile: {
+        ...profile.toObject(),
+        info: person,
+      },
+      message: responseMessages.created('Profile'),
+    });
+  }
+
+  /**
+   * @author Olivier
+   * @param {Object} req
+   * @param {Object} res
+   * @param {*} next
+   * @returns {Object} Returns the response
+   */
+  static async getProfile(req, res) {
+    const { profile } = req;
+
+    return res.status(statusCodes.OK).json({
+      status: statusCodes.OK,
+      profile,
+    });
+  }
+
+  /**
+   * @author Olivier
+   * @param {Object} req
+   * @param {Object} res
+   * @param {*} next
+   * @returns {Object} Returns the response
+   */
+  static async getProfiles(req, res) {
+    const { page = 1 } = req.query;
+    const profiles = await User.paginate(
+      {
+        status: 'active',
+      },
+      {
+        select: 'username email picture city country info',
+        populate: 'info',
+        limit: PAGE_LIMIT,
+        offset: page - 1,
+      },
+    );
+
+    return res.status(statusCodes.OK).json({
+      status: statusCodes.OK,
+      ...profiles,
+      profiles: profiles.docs,
+      docs: undefined,
+      offset: undefined,
+      limit: undefined,
+      page,
+    });
+  }
+}
