@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-const TokenSchema = Schema({
+const TokenSchema = new Schema({
   _userId: {
     type: Schema.Types.ObjectId,
     ref: 'User',
@@ -17,11 +17,11 @@ const TokenSchema = Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
+    default: new Date(),
   },
   updatedAt: {
     type: Date,
-    default: Date.now,
+    default: new Date(),
   },
 });
 

@@ -15,6 +15,14 @@ const TagSchema = new Schema({
     type: Number,
     default: 1,
   },
+  createdAt: {
+    type: Date,
+    default: new Date(),
+  },
+  updatedAt: {
+    type: Date,
+    default: new Date(),
+  },
 });
 
 export default model('Tag', TagSchema);

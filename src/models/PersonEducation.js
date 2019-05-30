@@ -1,17 +1,22 @@
 import mongoose, { Schema } from 'mongoose';
+import moment from 'moment';
 
-const OrganizationSchema = {
-  name: {
+const personEducationSchema = new Schema({
+  from: {
+    type: Date,
+    required: true,
+  },
+  to: {
+    type: Date,
+  },
+  institution: {
     type: String,
     required: true,
   },
-  registrationNumber: {
+  description: {
     type: String,
   },
-  employeesNumber: {
-    type: Number,
-  },
-  description: {
+  link: {
     type: String,
   },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
@@ -23,6 +28,6 @@ const OrganizationSchema = {
     type: Date,
     default: new Date(),
   },
-};
+});
 
-export default mongoose.model('Organization', OrganizationSchema);
+export default mongoose.model('PersonEducation', personEducationSchema);

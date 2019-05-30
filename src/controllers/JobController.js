@@ -43,7 +43,7 @@ export default class JobController {
   static async updateJob(req, res) {
     const { currentUser, body, job } = req;
 
-    if (!currentUser._id.equals(job.author._id)) {
+    if (!currentUser._id.equals(job.author && job.author._id)) {
       return res.status(statusCodes.UNAUTHORIZED).json({
         status: statusCodes.UNAUTHORIZED,
         message: responseMessages.unauthorized(),
@@ -69,7 +69,7 @@ export default class JobController {
   static async deleteJob(req, res) {
     const { currentUser, job } = req;
 
-    if (!currentUser._id.equals(job.author._id)) {
+    if (!currentUser._id.equals(job.author && job.author._id)) {
       return res.status(statusCodes.UNAUTHORIZED).json({
         status: statusCodes.UNAUTHORIZED,
         job,

@@ -2,16 +2,20 @@ import request from 'supertest';
 import app from '../../app';
 import { jobData, jobCategoryData } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
-import { Token, JobCategory } from '../../models';
+import { User, Token, JobCategory } from '../../models';
 import * as statusCodes from '../../constants/statusCodes';
 
 let tokenData;
 let token;
 let jobCategory;
+let user;
 describe('jobCategories', () => {
   beforeAll(async () => {
     await JobCategory.deleteMany({});
-    tokenData = await Token.findOne({}).sort({ createdAt: -1 });
+    user = await User.findOne({ username: 'admin' });
+    tokenData = await Token.findOne({ _userId: user._id }).sort({
+      createdAt: -1,
+    });
     token = `Bearer ${tokenData.token}`;
     await JobCategory.updateOne(
       { name: jobCategoryData.name },
