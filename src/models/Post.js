@@ -38,6 +38,14 @@ const PostSchema = new Schema({
     type: String,
     default: 'active',
   },
+  createdAt: {
+    type: Date,
+    default: new Date(),
+  },
+  updatedAt: {
+    type: Date,
+    default: new Date(),
+  },
 });
 
 PostSchema.pre('save', function cb(next) {

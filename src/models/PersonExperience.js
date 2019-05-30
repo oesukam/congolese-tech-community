@@ -19,6 +19,14 @@ const personEducationSchema = new Schema({
     type: String,
   },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
+  createdAt: {
+    type: Date,
+    default: new Date(),
+  },
+  updatedAt: {
+    type: Date,
+    default: new Date(),
+  },
 });
 
 export default mongoose.model('PersonExperience', personEducationSchema);
