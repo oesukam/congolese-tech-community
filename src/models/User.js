@@ -67,7 +67,7 @@ const UserSchema = new Schema({
   },
   updatedAt: {
     type: Date,
-    default: null,
+    default: new Date(),
   },
 });
 
