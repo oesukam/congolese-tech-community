@@ -42,4 +42,28 @@ module.exports = {
     email: 'company@name.com',
     password: 'CompanyName123',
   },
+  organizationUser: {
+    companyName: 'company name',
+    username: 'company_name_user',
+    email: 'company_user@name.com',
+    password: 'CompanyName123',
+  },
+  profileData: {
+    firstName: 'First Name',
+    middleName: 'Middle Name',
+    lastName: 'Last Name',
+  },
+  educationData: {
+    from: '2019',
+    institution: 'UNIKIN',
+  },
+  experienceData: {
+    from: '2019',
+    institution: 'Telecom',
+  },
+  projectData: {
+    from: '2019',
+    title: 'Platform',
+    owner: 'Myself',
+  },
 };

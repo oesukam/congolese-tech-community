@@ -24,7 +24,8 @@ class AuthController {
    * if not, a new one is created,
    * else the same user is returned
    *
-   * @static
+   * @author Grace Lungu
+   * @static 
    * @param {*} res
    * @param {*} providerUser
    * @returns {object} user
@@ -71,7 +72,7 @@ class AuthController {
     person = person || (await Person.findOne({ user: user.id }));
     user = await getUser(person.id);
 
-    const token = encrypt.generateToken({ id: user.id });
+    const token = await encrypt.generateToken(person.user);
 
     return res.status(status).json({
       user,
@@ -83,6 +84,7 @@ class AuthController {
    * Authentificate the user
    * from social login
    *
+   * @author Grace Lungu
    * @static
    * @param {*} req
    * @param {*} res
@@ -96,6 +98,7 @@ class AuthController {
   /**
    * Adds different fields to the user
    *
+   * @author Grace Lungu
    * @static
    * @param {*} user
    * @returns {object} user
@@ -140,7 +143,7 @@ class AuthController {
 
     const result = await getUser(organization.id);
 
-    const token = encrypt.generateToken({ id: user._id });
+    const token = await encrypt.generateToken(user._id);
     sendMail(email, companyName, token);
 
     return res.status(CREATED).json({
@@ -171,7 +174,7 @@ class AuthController {
       });
     }
 
-    const token = encrypt.generateToken({ id: user.id });
+    const token = await encrypt.generateToken(user.id);
 
     if (!user.verified) {
       sendMail(user.email, username, token);
@@ -205,9 +208,9 @@ class AuthController {
    * @memberof Auth
    */
   static async verification(req, res) {
-    const { id } = req.jwtPayload;
+    const { _id } = req.jwtPayload;
     const user = await User.findOne({
-      _id: id,
+      _id
     });
 
     if (user.verified) {
@@ -216,7 +219,7 @@ class AuthController {
         message: 'Your account has already been verified',
       });
     }
-    await User.updateOne({ _id: id }, { verified: true });
+    await User.updateOne({ _id }, { verified: true });
     return res.status(OK).json({
       status: OK,
       message: 'Your account has been verified successfully',

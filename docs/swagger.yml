@@ -92,24 +92,6 @@ paths:
       responses:
         '200':
           description: redirect to facebook
-  /auth/twitter:
-    get:
-      tags:
-        - 'Social'
-      summary: twitter login
-      operationId: twitterLogin
-      responses:
-        '200':
-          description: returns message
-  /auth/twitter/callback:
-    get:
-      tags:
-        - 'Social'
-      summary: twitter login redirect
-      operationId: twitterLoginRedirect
-      responses:
-        '200':
-          description: redirect to facebook
   /auth/google:
     get:
       tags:
@@ -257,6 +239,54 @@ paths:
               message:
                 type: string
                 example: Your password has been reset successfully!
+  
+  /chats/{username}:
+    get:
+      summary: 'Get the current user chat messages'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Users'
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Return chat array
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+    post:
+      summary: 'Send a new message'
+      security:
+        - bearerAuth: []
+      tags:
+        - 'Users'
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+        - in: "body"
+          name: "body"
+          description: "Contains message body"
+          required: true
+          schema:
+            type: "object"
+            properties:
+                body:
+                  type: "string"
+        
+      responses:
+        '200':
+          description: return chat array
+        '401':
+          description: Unauthorized
+        '404':
+          description: User not found
+
 
   /user:
     get:

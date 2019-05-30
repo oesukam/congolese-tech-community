@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import 'dotenv/config';
+import Token from '../models/Token';
 
 const { SECRET } = process.env;
 
@@ -28,11 +29,15 @@ class Authentication {
   }
 
   /**
-   * @param  {Object} data
+   * @param  {Object} _id
    * @returns  {string}} {expiresIn
    */
-  static generateToken(data) {
-    const token = jwt.sign(data, SECRET, { expiresIn: '2d' });
+  static async generateToken(_id) {
+    const token = jwt.sign({ _id }, SECRET, { expiresIn: '2d' });
+    await Token.create({
+      _userId: _id,
+      token
+    });
     return token;
   }
 }

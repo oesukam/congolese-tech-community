@@ -1,6 +1,6 @@
 import express from 'express';
 import { celebrate } from 'celebrate';
-import { recommendationController } from '../../../controllers';
+import { RecommendationController } from '../../../controllers';
 import { recommendationValidator } from './validators';
 import { checkAuth, asyncHandler, userExist } from '../../../middlewares';
 
@@ -12,7 +12,7 @@ router
         checkAuth,
         userExist,
         celebrate({ body: recommendationValidator.recommend }),
-        asyncHandler(recommendationController.recommend),
+        asyncHandler(RecommendationController.recommend),
     );
 
 export default router;
