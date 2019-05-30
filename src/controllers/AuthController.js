@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import User from '../models/User';
 import Person from '../models/Person';
-// import Token from '../models/Token';
 import { encrypt, sendMail } from '../helpers';
 import Organization from '../models/Organization';
 import {
