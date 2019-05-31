@@ -22,7 +22,7 @@ module.exports = {
     global: {
       functions: 80,
       lines: 80,
-      statements: -10,
+      statements: -11,
     },
   },
   transform: {
