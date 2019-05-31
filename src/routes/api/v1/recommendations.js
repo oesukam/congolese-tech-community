@@ -7,32 +7,32 @@ import { checkAuth, asyncHandler, userExist } from '../../../middlewares';
 const router = express.Router();
 
 router
-    .route('/:username')
-    .post(
-        checkAuth,
-        userExist,
-        celebrate({ body: recommendationValidator.recommend }),
-        asyncHandler(RecommendationController.recommend),
-    ).get(
-        userExist,
-        asyncHandler(RecommendationController.get)
-    );
+  .route('/:username')
+  .post(
+    checkAuth,
+    userExist,
+    celebrate({ body: recommendationValidator.recommend }),
+    asyncHandler(RecommendationController.createRecommendation),
+  ).get(
+    userExist,
+    asyncHandler(RecommendationController.getRecommendation)
+  );
 
 router
-    .route('/:recommendation')
-    .put(
-        checkAuth,
-        celebrate({ body: recommendationValidator.recommend }),
-        asyncHandler(RecommendationController.update),
-    )
+  .route('/:recommendationId')
+  .put(
+    checkAuth,
+    celebrate({ body: recommendationValidator.recommend }),
+    asyncHandler(RecommendationController.updateRecommendation),
+  )
 
-router.route('/:recommendation/approve')
-    .post(
-        checkAuth,
-        asyncHandler(RecommendationController.approve)
-    ).delete(
-        checkAuth,
-        asyncHandler(RecommendationController.disapprove)
-    )
+router.route('/:recommendationId/approve')
+  .post(
+    checkAuth,
+    asyncHandler(RecommendationController.approveRecommendation)
+  ).delete(
+    checkAuth,
+    asyncHandler(RecommendationController.disapproveRecommendation)
+  )
 
 export default router;
