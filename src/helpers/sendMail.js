@@ -42,4 +42,43 @@ const sendToken = async (email, name, token, body = bodyDefault) => {
   }
 };
 
+/**
+ * Send a link for password reset,
+ * returns an object with a sent
+ * property
+ *
+ * @param {string} email
+ * @param {string} name
+ * @param {string} token
+ * @param {string} body
+ * @returns {object} {sent,error}
+ */
+export const resetPasswordMail = async (email, name, token) => {
+  const link = `${DOMAIN}/auth/reset-password/${token}`;
+  const body = `
+      You have requested for a password reset. 
+      Tap the button below to reset your account password.
+      Ignore the email if you did not request for a new password
+    `;
+  try {
+    const response = await mailer({
+      email,
+      subject: 'Reset Password',
+      text: `${name}`,
+      link,
+      linkText: 'RESET YOUR PASSWORD',
+      name,
+      title: 'Reset Password',
+      body,
+    });
+
+    return response;
+  } catch (error) {
+    return {
+      sent: false,
+      error,
+    };
+  }
+};
+
 export default sendToken;

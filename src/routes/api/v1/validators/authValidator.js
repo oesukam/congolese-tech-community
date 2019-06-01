@@ -27,7 +27,22 @@ const login = Joi.object().keys({
     .required(),
 });
 
+const email = Joi.object().keys({
+  email: Joi.string()
+    .trim()
+    .email()
+    .required(),
+});
+
+const password = Joi.object().keys({
+  password: Joi.string()
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/)
+    .required(),
+});
+
 export default {
   signup,
   login,
+  email,
+  password,
 };
