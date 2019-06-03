@@ -25,7 +25,7 @@ class PasswordController {
    * @memberof PasswordController
    */
   static async reset(req, res) {
-    const { _id, email, username } = req.currentUser;
+    const { _id, email, username } = req.user;
     const token = await encrypt.generateToken(_id);
 
     resetPasswordMail(email, username, token);

@@ -16,7 +16,7 @@ const checkEmailUser = async (req, res, next) => {
     });
   }
 
-  req.currentUser = user;
+  req.user = user;
   next();
 };
 

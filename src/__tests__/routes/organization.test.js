@@ -90,45 +90,6 @@ describe('Organization auth', () => {
     });
   });
 
-  describe('Reset password', () => {
-    test('should send the reset password link', async () => {
-      const resp = await request(app)
-        .post(`${urlPrefix}/auth/password`)
-        .send({ email: organization.email });
-      expect(resp.status).toBe(200);
-      expect(resp.body.data).toHaveProperty('token');
-    });
-
-    test('should send the reset password link', async () => {
-      const resp = await request(app)
-        .post(`${urlPrefix}/auth/password`)
-        .send({ email: `k${organization.email}` });
-      expect(resp.status).toBe(404);
-      expect(resp.body).toHaveProperty('message');
-      expect(resp.body.message).toBe('email does not exist');
-    });
-
-    test('should not update the password with the same password', async () => {
-      const resp = await request(app)
-        .put(`${urlPrefix}/auth/password`)
-        .set('Authorization', `Bearer ${tokenLog}`)
-        .send({ password: organization.password });
-      expect(resp.status).toBe(400);
-      expect(resp.body).toHaveProperty('message');
-      expect(resp.body.message).toBe('New password must be different from the current',);
-    });
-
-    test('should reset the passord', async () => {
-      const resp = await request(app)
-        .put(`${urlPrefix}/auth/password`)
-        .set('Authorization', `Bearer ${tokenLog}`)
-        .send({ password: `${organization.password}12` });
-      expect(resp.status).toBe(200);
-      expect(resp.body).toHaveProperty('message');
-      expect(resp.body.message).toBe('Password has been updated successfully');
-    });
-  });
-
   afterAll(async () => {
     await User.deleteOne({ email: organization.email });
     await Organization.deleteMany({});
