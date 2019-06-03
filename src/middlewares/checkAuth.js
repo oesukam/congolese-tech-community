@@ -29,7 +29,7 @@ const checkAuth = async (req, res, next) => {
     if (err || !decoded) {
       return res
         .status(401)
-        .json({ status: 401, message: 'Unauthorized access' });
+        .json({ status: 401, message: 'Unauthorized access token' });
     }
     user = await User.findOne({
       _id: decoded._id,
