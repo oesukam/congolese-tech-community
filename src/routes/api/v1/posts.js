@@ -70,6 +70,5 @@ router
     checkPostAndJob,
     asyncHandler(PostController.sharePost),
   );
-// .get(asyncHandler(PostController.getPosts));
 
 export default router;

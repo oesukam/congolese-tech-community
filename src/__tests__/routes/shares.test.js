@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '../../app';
 import { postData, organizationShare } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
-import { User, Post, Job } from '../../models';
+import { User, Token, Post, Job } from '../../models';
 import * as statusCodes from '../../constants/statusCodes';
 import slugString from '../../helpers/slugString';
 
@@ -11,10 +11,12 @@ let post;
 let job;
 describe('Shares', () => {
   beforeAll(async () => {
-    const res = await request(app)
-      .post(`${urlPrefix}/auth/signup`)
-      .send(organizationShare);
-    token = `Bearer ${res.body.token}`;
+    const user1 = await User.findOne({ username: 'admin' });
+    const tokenData = await Token.findOne({ _userId: user1._id }).sort({
+      createdAt: -1,
+    });
+
+    token = `Bearer ${tokenData.token}`;
     post = await Post.create({ ...postData, slug: slugString('Test') });
     job = await Job.create({ ...postData, slug: slugString('Test') });
   });
