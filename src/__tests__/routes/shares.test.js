@@ -2,16 +2,13 @@ import request from 'supertest';
 import app from '../../app';
 import { postData, organizationShare } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
-import { User, Token, Post, Job } from '../../models';
+import { User, Post, Job } from '../../models';
 import * as statusCodes from '../../constants/statusCodes';
 import slugString from '../../helpers/slugString';
 
-let tokenData;
 let token;
-let postSlug;
 let post;
 let job;
-let user;
 describe('Shares', () => {
   beforeAll(async () => {
     const res = await request(app)
