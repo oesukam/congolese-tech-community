@@ -1,6 +1,5 @@
 import { Post } from '../models';
 import { statusCodes, responseMessages } from '../constants';
-
 /**
  * @description Post Controller class
  */

@@ -1,12 +1,11 @@
-import { PostComment } from '../models';
+import { UserNotification } from '../models';
 import { statusCodes, responseMessages } from '../constants';
 import { PAGE_LIMIT } from '../constants/shared';
-import { notifEvents } from '../middlewares/registerEvents';
 
 /**
- * @description PostComment Controller class
+ * @description UserNotification Controller class
  */
-export default class PostCommentController {
+export default class UserNotificationController {
   /**
    * @author Olivier
    * @param {Object} req
@@ -14,21 +13,16 @@ export default class PostCommentController {
    * @param {*} next
    * @returns {Object} Returns the response
    */
-  static async createPostComment(req, res) {
+  static async createUserNotification(req, res) {
     const { currentUser, body, post } = req;
     body.author = currentUser._id;
     body.post = post._id;
-    const postComment = await PostComment.create(body);
-
-    notifEvents.emit('post-commented', {
-      currentUser: currentUser.toObject(),
-      post: post.toObject(),
-    });
+    const userNotification = await UserNotification.create(body);
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
-      postComment,
-      message: responseMessages.created('Post Comment'),
+      userNotification,
+      message: responseMessages.created('Notification'),
     });
   }
 
@@ -39,25 +33,25 @@ export default class PostCommentController {
    * @param {*} next
    * @returns {Object} Returns the response
    */
-  static async updatePostComment(req, res) {
-    const { currentUser, body, postComment } = req;
+  static async readUserNotification(req, res) {
+    const { currentUser, userNotification } = req;
 
-    if (!currentUser._id.equals(postComment.author)) {
+    if (!currentUser._id.equals(userNotification.user)) {
       return res.status(statusCodes.UNAUTHORIZED).json({
         status: statusCodes.UNAUTHORIZED,
         message: responseMessages.unauthorized(),
       });
     }
 
-    await postComment.updateOne(body);
+    await userNotification.updateOne({ read: true });
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
-      postComment: {
-        ...postComment.toObject(),
-        ...body,
+      userNotification: {
+        ...userNotification.toObject(),
+        read: true,
       },
-      message: responseMessages.updated('Post Comment'),
+      message: responseMessages.updated('Notification'),
     });
   }
 
@@ -68,22 +62,22 @@ export default class PostCommentController {
    * @param {*} next
    * @returns {Object} Returns the response
    */
-  static async deletePostComment(req, res) {
-    const { currentUser, postComment } = req;
+  static async deleteUserNotification(req, res) {
+    const { currentUser, userNotification } = req;
 
-    if (!currentUser._id.equals(postComment.author)) {
+    if (!currentUser._id.equals(userNotification.user)) {
       return res.status(statusCodes.UNAUTHORIZED).json({
         status: statusCodes.UNAUTHORIZED,
         message: responseMessages.unauthorized(),
       });
     }
 
-    await postComment.deleteOne();
+    await userNotification.deleteOne();
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
-      postComment,
-      message: responseMessages.deleted('Post Comment'),
+      userNotification,
+      message: responseMessages.deleted('Notification'),
     });
   }
 
@@ -94,21 +88,17 @@ export default class PostCommentController {
    * @param {*} next
    * @returns {Object} Returns the response
    */
-  static async getAllPostComments(req, res) {
+  static async getAllUserNotifications(req, res) {
     const {
-      post: { _id: post },
+      currentUser: { _id: user },
     } = req;
     const { page = 1 } = req.query;
 
-    const comments = await PostComment.paginate(
+    const notifications = await UserNotification.paginate(
       {
-        post,
-        status: {
-          $ne: 'deleted',
-        },
+        user,
       },
       {
-        populate: [{ path: 'author', select: 'username email picture' }],
         limit: PAGE_LIMIT,
         offset: page - 1,
       },
@@ -116,8 +106,8 @@ export default class PostCommentController {
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
-      ...comments,
-      postComments: comments.docs,
+      ...notifications,
+      userNotifications: notifications.docs,
       docs: undefined,
       offset: undefined,
       limit: undefined,
