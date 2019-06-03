@@ -36,12 +36,9 @@ describe('Reset password', () => {
       .put(`${urlPrefix}/auth/password`)
       .set('Authorization', token)
       .send({ password: 'Admin123456' });
-    console.log(resp.body);
     expect(resp.status).toBe(400);
     expect(resp.body).toHaveProperty('message');
-    expect(resp.body.message).toBe(
-      'New password must be different from the current',
-    );
+    expect(resp.body.message).toBe('New password must be different from the current',);
   });
 
   test('should reset the passord', async () => {
@@ -49,7 +46,6 @@ describe('Reset password', () => {
       .put(`${urlPrefix}/auth/password`)
       .set('Authorization', token)
       .send({ password: 'Admin123456New' });
-    console.log(resp.body);
     expect(resp.status).toBe(200);
     expect(resp.body).toHaveProperty('message');
     expect(resp.body.message).toBe('Password has been updated successfully');
