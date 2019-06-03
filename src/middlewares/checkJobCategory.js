@@ -3,11 +3,10 @@ import * as statusCodes from '../constants/statusCodes';
 import { notExist } from '../constants/responseMessages';
 
 const checkJobCategory = async (req, res, next) => {
-  const { jobCategorySlug: slug } = req.params;
+  const { jobCategorySlug } = req.params;
   const { category } = req.body;
-
   const foundJobCategory = await JobCategory.findOne({
-    slug: slug || category,
+    $or: [{ slug: jobCategorySlug }, { _id: category }],
   })
     .select('-__v')
     .populate('author', '-userCategory -__v -password');
