@@ -66,4 +66,7 @@ module.exports = {
     title: 'Platform',
     owner: 'Myself',
   },
+  postCommentData: {
+    body: 'Post comment',
+  },
 };
