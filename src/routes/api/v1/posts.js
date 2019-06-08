@@ -1,8 +1,13 @@
 import express from 'express';
 import { celebrate } from 'celebrate';
-import { PostController } from '../../../controllers';
-import { postValidator } from './validators';
-import { checkAuth, asyncHandler, checkPost } from '../../../middlewares';
+import { PostController, PostCommentController } from '../../../controllers';
+import { postValidator, postCommentValidator } from './validators';
+import {
+  checkAuth,
+  asyncHandler,
+  checkPost,
+  checkPostComment,
+} from '../../../middlewares';
 
 const router = express.Router();
 
@@ -25,5 +30,28 @@ router
     asyncHandler(PostController.updatePost),
   )
   .delete(checkAuth, asyncHandler(PostController.deletePost));
+
+/* 
+  Post comment routes
+*/
+
+router
+  .route('/:postSlug/comments')
+  .all(checkPost)
+  .post(
+    checkAuth,
+    celebrate({ body: postCommentValidator.createPostComment }),
+    asyncHandler(PostCommentController.createPostComment),
+  )
+  .get(asyncHandler(PostCommentController.getAllPostComments));
+
+router
+  .route('/:postSlug/comments/:postCommentId')
+  .all(checkAuth, checkPost, asyncHandler(checkPostComment))
+  .put(
+    celebrate({ body: postCommentValidator.updatePostComment }),
+    asyncHandler(PostCommentController.updatePostComment),
+  )
+  .delete(asyncHandler(PostCommentController.deletePostComment));
 
 export default router;

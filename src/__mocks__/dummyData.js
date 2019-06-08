@@ -67,6 +67,9 @@ module.exports = {
     owner: 'Myself',
   },
   recommendationDescritption: {
-    description: 'This is my recommendation description'
-  }
+    description: 'This is my recommendation description',
+  },
+  postCommentData: {
+    body: 'Post comment',
+  },
 };
