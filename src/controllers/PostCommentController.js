@@ -72,7 +72,7 @@ export default class PostCommentController {
       });
     }
 
-    await postComment.deleteOne();
+    await postComment.updateOne({ status: 'deleted' });
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,

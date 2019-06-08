@@ -7,6 +7,7 @@ const checkPostComment = async (req, res, next) => {
 
   const foundPostComment = await PostComment.findOne({
     _id,
+    status: 'active',
   });
 
   if (!foundPostComment) {
