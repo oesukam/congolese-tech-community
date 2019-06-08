@@ -66,6 +66,9 @@ module.exports = {
     title: 'Platform',
     owner: 'Myself',
   },
+  recommendationDescritption: {
+    description: 'This is my recommendation description',
+  },
   postCommentData: {
     body: 'Post comment',
   },
