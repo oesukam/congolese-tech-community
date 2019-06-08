@@ -2,6 +2,7 @@ import express from 'express';
 import posts from './posts';
 import auth from './auth';
 import jobs from './jobs';
+import recommendations from './recommendations'
 import chat from './chat';
 import profiles from './profiles';
 import educations from './educations';
@@ -13,6 +14,7 @@ const router = express.Router();
 router.use('/posts', posts);
 router.use('/auth', auth);
 router.use('/jobs', jobs);
+router.use('/recommendations', recommendations);
 router.use('/chats', chat);
 router.use('/profiles', profiles);
 router.use('/educations', educations);

@@ -1,6 +1,10 @@
 import express from 'express';
 import { celebrate } from 'celebrate';
-import { PostController, PostCommentController } from '../../../controllers';
+import {
+  PostController,
+  PostCommentController,
+  LikesController,
+} from '../../../controllers';
 import { postValidator, postCommentValidator } from './validators';
 import {
   checkAuth,
@@ -53,5 +57,9 @@ router
     asyncHandler(PostCommentController.updatePostComment),
   )
   .delete(asyncHandler(PostCommentController.deletePostComment));
+router
+  .route('/:postSlug/like')
+  .post(checkAuth, checkPost, asyncHandler(LikesController.likePost))
+  .delete(checkAuth, checkPost, asyncHandler(LikesController.unlikePost));
 
 export default router;

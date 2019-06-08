@@ -47,6 +47,7 @@ const JobSchema = new Schema({
     type: String,
     default: 'active',
   },
+  likes: [{ type: Schema.Types.ObjectId, ref: 'Like', }]
 });
 
 JobSchema.pre('save', function cb(next) {

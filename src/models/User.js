@@ -69,6 +69,7 @@ const UserSchema = new Schema({
     type: Date,
     default: new Date(),
   },
+  recommendations: [{ type: Schema.Types.ObjectId, ref: 'Recommendation' }],
 });
 
 UserSchema.plugin(mongoosePaginate);
