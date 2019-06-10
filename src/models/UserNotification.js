@@ -6,9 +6,15 @@ const userNotification = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
+  email: {
+    type: String,
+  },
   content: {
     type: String,
     required: true,
+  },
+  link: {
+    type: String
   },
   read: {
     type: Boolean,

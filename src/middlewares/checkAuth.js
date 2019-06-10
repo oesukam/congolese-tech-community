@@ -43,6 +43,7 @@ const checkAuth = async (req, res, next) => {
         .json({ status: 401, message: 'Unauthorized access' });
     }
     req.currentUser = user;
+    req.token = foundToken;
     next();
   });
 };

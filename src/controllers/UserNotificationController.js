@@ -1,6 +1,9 @@
+import { EventEmitter } from 'events';
 import { UserNotification } from '../models';
 import { statusCodes, responseMessages } from '../constants';
 import { PAGE_LIMIT } from '../constants/shared';
+
+const notifEvents = new EventEmitter();
 
 /**
  * @description UserNotification Controller class
@@ -8,21 +11,37 @@ import { PAGE_LIMIT } from '../constants/shared';
 export default class UserNotificationController {
   /**
    * @author Olivier
+   * @param {Object} data
+   * @param {*} next
+   * @returns {Object} Returns record's data
+   */
+  static async createUserNotification(data) {
+    const userNotification = await UserNotification.create(data);
+
+    return userNotification;
+  }
+
+  /**
+   * @author Olivier
    * @param {Object} req
    * @param {Object} res
    * @param {*} next
    * @returns {Object} Returns the response
    */
-  static async createUserNotification(req, res) {
-    const { currentUser, body, post } = req;
-    body.author = currentUser._id;
-    body.post = post._id;
-    const userNotification = await UserNotification.create(body);
+  static async updateNotificationToken(req, res) {
+    const { token, currentUser } = req;
+    const { notificationToken } = req;
+
+    await token.updateOne({ notificationToken });
+
+    notifEvents.emit('register-notification-token', {
+      notificationToken,
+      currentUser,
+    });
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
-      userNotification,
-      message: responseMessages.created('Notification'),
+      message: responseMessages.updated('Notification Token'),
     });
   }
 

@@ -10,6 +10,7 @@ import {
   FORBIDDEN,
   UNAUTHORIZED,
 } from '../constants/statusCodes';
+import Token from '../models/Token';
 
 dotenv.config();
 
@@ -121,7 +122,7 @@ class AuthController {
    */
   static async signup(req, res) {
     const hashedPassword = encrypt.hashPassword(req.body.password);
-    const { companyName, username, email } = req.body;
+    const { companyName, username, email, notificationToken } = req.body;
 
     const user = await User.create({
       username,
@@ -141,6 +142,9 @@ class AuthController {
     const result = await getUser(organization.id);
 
     const token = encrypt.generateToken({ id: user._id });
+
+    await Token.create({ user: user._id, token, notificationToken });
+
     sendMail(email, companyName, token);
 
     return res.status(CREATED).json({
@@ -160,7 +164,7 @@ class AuthController {
    * @memberof Auth
    */
   static async login(req, res) {
-    const { username, password } = req.body;
+    const { username, password, notificationToken } = req.body;
 
     const user = await User.findOne().or([{ username }, { email: username }]);
 
@@ -172,6 +176,8 @@ class AuthController {
     }
 
     const token = encrypt.generateToken({ id: user.id });
+
+    await Token.create({ user: user._id, token, notificationToken });
 
     if (!user.verified) {
       sendMail(user.email, username, token);
