@@ -10,16 +10,18 @@ export const notifEvents = new EventEmitter();
 const registerEvents = () => {
   if (NODE_ENV !== 'test') {
     notifEvents.on(
-      'post-commented',
-      PostCommentNotificationController.postCommented,
-    );
-
-    notifEvents.on(
       'register-notification-token',
       ({ notificationToken, currentUser }) => {
         subscribe({ notificationToken, topic: currentUser._id });
       },
     );
+
+    notifEvents.on(
+      'post-commented',
+      PostCommentNotificationController.postActions,
+    );
+
+    notifEvents.on('post-liked', PostCommentNotificationController.postActions);
   }
 };
 

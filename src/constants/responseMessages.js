@@ -9,3 +9,4 @@ export const exist = resource => `${resource} already exists`;
 export const notExist = resource => `${resource} does not exist`;
 export const alreadyExist = resource => `${resource} already exist`;
 export const unauthorized = () => 'Unauthorized access';
+export const notAllowed = (resource, action) => `${resource} not allowed to ${action}`; 

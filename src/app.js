@@ -1,6 +1,8 @@
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+import http from 'http';
+import socket from 'socket.io';
 import 'dotenv/config';
 import swaggerUI from 'swagger-ui-express';
 import YAML from 'yamljs';
@@ -36,6 +38,10 @@ app.use(morgan(isProd ? 'combined' : 'dev'));
 app.use(routes);
 app.use(joiErrors());
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerYAMLDocs));
+
+const server = http.Server(app);
+const io = socket(server, { log: true });
+app.io = io;
 
 if (isProd) {
   app.use((req, res) => {

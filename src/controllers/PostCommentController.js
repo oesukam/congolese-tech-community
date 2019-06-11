@@ -24,6 +24,7 @@ export default class PostCommentController {
       currentUser: currentUser.toObject(),
       token: token.toObject(),
       post: post.toObject(),
+      action: 'commented',
     });
 
     return res.status(statusCodes.OK).json({
@@ -79,7 +80,7 @@ export default class PostCommentController {
       });
     }
 
-    await postComment.deleteOne();
+    await postComment.updateOne({ status: 'deleted' });
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,

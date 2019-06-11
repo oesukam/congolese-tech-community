@@ -80,13 +80,13 @@ describe('jobCategories', () => {
 
   describe('retreive a job category', () => {
     test('should return `Job Category does not exist`', async () => {
-      const res = await request(app).get(`${urlPrefix}/jobs/categories/fake-post-slug`,);
+      const res = await request(app).get(`${urlPrefix}/jobs/categories/fake-post-slug`);
       expect(res.status).toBe(statusCodes.NOT_FOUND);
       expect(res.body.message).toBe('Job Category does not exist');
     });
 
     test('should return `a job category`', async () => {
-      const res = await request(app).get(`${urlPrefix}/jobs/categories/${jobCategory.slug}`,);
+      const res = await request(app).get(`${urlPrefix}/jobs/categories/${jobCategory.slug}`);
       expect(res.status).toBe(statusCodes.OK);
       expect(res.body.jobCategory).toHaveProperty('name');
     });
@@ -102,7 +102,7 @@ describe('jobCategories', () => {
 
   describe('delete a job category', () => {
     test('should return `Unauthorized access`', async () => {
-      const res = await request(app).delete(`${urlPrefix}/jobs/categories/${jobCategory.slug}`,);
+      const res = await request(app).delete(`${urlPrefix}/jobs/categories/${jobCategory.slug}`);
       expect(res.status).toBe(statusCodes.UNAUTHORIZED);
       expect(res.body.message).toBe('Unauthorized access');
     });
