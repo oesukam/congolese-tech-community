@@ -8,6 +8,8 @@
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "dev": "babel-watch src/index.js",
     "start": "babel-node src/index.js",
+    "start:build": "npm run build && node dist/index.js",
+    "build": "babel src --out-dir dist --ignore 'src/__tests__,src/__mocks__'",
     "lint": "node_modules/.bin/eslint .",
     "lint:fix": "prettier-eslint --write '**/*.js'",
     "seed": "babel-node src/seeders/index.js",
@@ -60,6 +62,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.4.4",
     "babel-jest": "^24.8.0",
     "babel-plugin-jest-hoist": "^24.6.0",
     "coveralls": "^3.0.3",
