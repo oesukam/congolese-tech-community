@@ -1,5 +1,6 @@
 import { Post } from '../models';
 import { statusCodes, responseMessages } from '../constants';
+import { notifEvents } from '../middlewares/registerEvents';
 /**
  * @description Post Controller class
  */
@@ -20,6 +21,14 @@ export default class PostController {
     };
 
     const post = await Post.create({ ...body, author: currentUser._id });
+
+    notifEvents.emit('create-index', {
+      title: post.title,
+      objectID: post.slug,
+      resource: 'post',
+      image: post.image,
+      keywords: `${post.tags.join(' ')}`,
+    });
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
@@ -51,6 +60,14 @@ export default class PostController {
 
     await post.updateOne({ ...body });
 
+    notifEvents.emit('update-index', {
+      title: body.title,
+      objectID: post.slug,
+      resource: 'post',
+      image: body.image,
+      keywords: `${post.tags.join(' ')}`,
+    });
+
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
       post: { ...post.toObject(), ...body },
@@ -77,6 +94,8 @@ export default class PostController {
     }
 
     await post.updateOne({ status: 'deleted' });
+
+    notifEvents.emit('delete-index', post.slug);
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,

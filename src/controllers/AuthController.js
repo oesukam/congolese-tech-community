@@ -11,6 +11,7 @@ import {
   UNAUTHORIZED,
 } from '../constants/statusCodes';
 import Token from '../models/Token';
+import { notifEvents } from '../middlewares/registerEvents';
 
 dotenv.config();
 
@@ -74,6 +75,14 @@ class AuthController {
     user = await getUser(person.id);
 
     const token = await encrypt.generateToken(person.user);
+
+    notifEvents.emit('create-index', {
+      title: user.username,
+      objectID: user.username,
+      resource: 'user',
+      image: picture,
+      keywords: `${name.givenName} ${name.familyName}`,
+    });
 
     return res.status(status).json({
       user,
@@ -149,6 +158,13 @@ class AuthController {
     await Token.create({ user: user._id, token, notificationToken });
 
     sendMail(email, companyName, token);
+
+    notifEvents.emit('create-index', {
+      title: companyName,
+      objectID: username,
+      resource: 'user',
+      keywords: `${companyName} ${username}`,
+    });
 
     return res.status(CREATED).json({
       status: CREATED,

@@ -3,11 +3,11 @@ import 'dotenv/config';
 import serviceAccount from './firebaseServiceAccount';
 import logger from '../helpers/logger';
 
-const { APP_NAME, APP_LOGO } = process.env;
+const { APP_NAME, APP_LOGO, FIREBASE_DATABASE_URL } = process.env;
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://tech-community-a8ff7.firebaseio.com',
+  databaseURL: FIREBASE_DATABASE_URL,
 });
 
 const defaultNotification = {

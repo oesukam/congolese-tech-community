@@ -13,6 +13,7 @@ module.exports = {
     'src/models/index.js',
     'src/middlewares/joiErrors.js',
     'src/middlewares/asyncHandler.js',
+    'src/middlewares/registerEvents.js',
     'src/config',
     'src/constants',
     'src/helpers/sendMail.js',
