@@ -46,6 +46,7 @@ const PostSchema = new Schema({
     type: Date,
     default: new Date(),
   },
+  likes: [{ type: Schema.Types.ObjectId, ref: 'Like', }]
 });
 
 PostSchema.pre('save', function cb(next) {

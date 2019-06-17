@@ -18,7 +18,9 @@ beforeAll(async () => {
   token = `Bearer ${tokenData.token}`;
 
   recommendedUser = await User.findOne({ username: 'lungu' });
-  recommededTokenData = await Token.findOne({ _userId: recommendedUser._id }).sort({
+  recommededTokenData = await Token.findOne({
+    _userId: recommendedUser._id,
+  }).sort({
     createdAt: -1,
   });
   recommededUsertoken = `Bearer ${recommededTokenData.token}`;
@@ -26,7 +28,6 @@ beforeAll(async () => {
 
 describe('Recommendations', () => {
   describe('User recommendation', () => {
-
     test('should return `Unauthorized access`', async () => {
       const res = await request(app)
         .post(`${urlPrefix}/recommendations/${recommendedUser.username}`)
@@ -42,7 +43,9 @@ describe('Recommendations', () => {
         .send(recommendationDescritption);
       recommendation.id = res.body.recommendation._id;
       expect(res.status).toBe(statusCodes.OK);
-      expect(res.body.recommendation.description).toBe(recommendationDescritption.description);
+      expect(res.body.recommendation.description).toBe(
+        recommendationDescritption.description,
+      );
     });
 
     test('should not find the user', async () => {
@@ -60,12 +63,13 @@ describe('Recommendations', () => {
         .set('Authorization', token)
         .send(recommendationDescritption);
       expect(res.status).toBe(statusCodes.FORBIDDEN);
-      expect(res.body.message).toBe(responseMessages.notAllowed('You are', 'recommend yourself'));
+      expect(res.body.message).toBe(
+        responseMessages.notAllowed('You are', 'recommend yourself'),
+      );
     });
   });
 
   describe('Recommendation approval', () => {
-
     test('should return `Unauthorized access`', async () => {
       const res = await request(app)
         .post(`${urlPrefix}/recommendations/${recommendation.id}/approve`)
@@ -77,8 +81,7 @@ describe('Recommendations', () => {
     test('should approve a recommendation', async () => {
       const res = await request(app)
         .post(`${urlPrefix}/recommendations/${recommendation.id}/approve`)
-        .set('Authorization', recommededUsertoken)
-      console.log(res.body);
+        .set('Authorization', recommededUsertoken);
       expect(res.status).toBe(statusCodes.OK);
       expect(res.body.recommendation.accepted).toBe(true);
     });
@@ -86,9 +89,11 @@ describe('Recommendations', () => {
     test('should not find the recommendation', async () => {
       const res = await request(app)
         .post(`${urlPrefix}/recommendations/5cafc73bcba95353169fb518/approve`)
-        .set('Authorization', token)
+        .set('Authorization', token);
       expect(res.status).toBe(statusCodes.NOT_FOUND);
-      expect(res.body.message).toBe(responseMessages.notExist('The recommendation'));
+      expect(res.body.message).toBe(
+        responseMessages.notExist('The recommendation'),
+      );
     });
 
     test('should forbid a user to approve not owned recommendations', async () => {
@@ -97,12 +102,13 @@ describe('Recommendations', () => {
         .set('Authorization', token)
         .send(recommendationDescritption);
       expect(res.status).toBe(statusCodes.FORBIDDEN);
-      expect(res.body.message).toBe(responseMessages.notAllowed('You are', 'approve this recommendation'));
+      expect(res.body.message).toBe(
+        responseMessages.notAllowed('You are', 'approve this recommendation'),
+      );
     });
   });
 
   describe('Recommendation disapproval', () => {
-
     test('should return `Unauthorized access`', async () => {
       const res = await request(app)
         .delete(`${urlPrefix}/recommendations/${recommendation.id}/approve`)
@@ -114,7 +120,7 @@ describe('Recommendations', () => {
     test('should disapprove a recommendation', async () => {
       const res = await request(app)
         .delete(`${urlPrefix}/recommendations/${recommendation.id}/approve`)
-        .set('Authorization', recommededUsertoken)
+        .set('Authorization', recommededUsertoken);
       expect(res.status).toBe(statusCodes.OK);
       expect(res.body.recommendation.accepted).toBe(false);
     });
@@ -122,9 +128,11 @@ describe('Recommendations', () => {
     test('should not find the recommendation', async () => {
       const res = await request(app)
         .delete(`${urlPrefix}/recommendations/5cafc73bcba95353169fb518/approve`)
-        .set('Authorization', token)
+        .set('Authorization', token);
       expect(res.status).toBe(statusCodes.NOT_FOUND);
-      expect(res.body.message).toBe(responseMessages.notExist('The recommendation'));
+      expect(res.body.message).toBe(
+        responseMessages.notExist('The recommendation'),
+      );
     });
 
     test('should forbid a user to disapprove not owned recommendations', async () => {
@@ -133,12 +141,16 @@ describe('Recommendations', () => {
         .set('Authorization', token)
         .send(recommendationDescritption);
       expect(res.status).toBe(statusCodes.FORBIDDEN);
-      expect(res.body.message).toBe(responseMessages.notAllowed('You are', 'disapprove this recommendation'));
+      expect(res.body.message).toBe(
+        responseMessages.notAllowed(
+          'You are',
+          'disapprove this recommendation',
+        ),
+      );
     });
   });
 
   describe('Recommendation update', () => {
-
     test('should return `Unauthorized access`', async () => {
       const res = await request(app)
         .put(`${urlPrefix}/recommendations/${recommendation.id}`)
@@ -151,7 +163,7 @@ describe('Recommendations', () => {
       const res = await request(app)
         .put(`${urlPrefix}/recommendations/${recommendation.id}`)
         .set('Authorization', token)
-        .send(recommendationDescritption)
+        .send(recommendationDescritption);
       expect(res.status).toBe(statusCodes.OK);
       expect(res.body.recommendation.accepted).toBe(false);
     });
@@ -160,9 +172,11 @@ describe('Recommendations', () => {
       const res = await request(app)
         .put(`${urlPrefix}/recommendations/5cafc73bcba95353169fb518`)
         .set('Authorization', token)
-        .send(recommendationDescritption)
+        .send(recommendationDescritption);
       expect(res.status).toBe(statusCodes.NOT_FOUND);
-      expect(res.body.message).toBe(responseMessages.notExist('The recommendation'));
+      expect(res.body.message).toBe(
+        responseMessages.notExist('The recommendation'),
+      );
     });
 
     test('should forbid a user to update owned recommendations', async () => {
@@ -171,15 +185,17 @@ describe('Recommendations', () => {
         .set('Authorization', recommededUsertoken)
         .send(recommendationDescritption);
       expect(res.status).toBe(statusCodes.FORBIDDEN);
-      expect(res.body.message).toBe(responseMessages.notAllowed('You are', 'update this recommendation'));
+      expect(res.body.message).toBe(
+        responseMessages.notAllowed('You are', 'update this recommendation'),
+      );
     });
   });
 
   describe('Get user recommendations', () => {
-
     test('should return an array of recommendations', async () => {
-      const res = await request(app)
-        .get(`${urlPrefix}/recommendations/${recommendedUser.username}`)
+      const res = await request(app).get(
+        `${urlPrefix}/recommendations/${recommendedUser.username}`,
+      );
       expect(res.status).toBe(statusCodes.OK);
       expect(res.body.recommendations).toEqual(expect.any(Array));
     });
