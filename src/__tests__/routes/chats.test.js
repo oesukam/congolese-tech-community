@@ -18,6 +18,8 @@ describe('Chats', () => {
         tokenData = await Token.findOne({ _userId: user._id }).sort({
             createdAt: -1,
         });
+        console.log(user, 'user===')
+        console.log(tokenData, 'token===')
         token = `Bearer ${tokenData.token}`;
     });
 
