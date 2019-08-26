@@ -21,6 +21,14 @@ const UserSchema = new Schema({
     type: String,
     default: null,
   },
+  followerCount: {
+    type: Number,
+    default: 0,
+  },
+  followedCount: {
+    type: Number,
+    default: 0,
+  },
   country: {
     type: String,
   },
