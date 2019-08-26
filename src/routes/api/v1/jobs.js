@@ -46,6 +46,7 @@ router
   .post(
     checkAuth,
     celebrate({ body: jobValidator.createJob }),
+    checkJobCategory,
     asyncHandler(JobController.createJob),
   )
   .get(asyncHandler(JobController.getJobs));

@@ -7,93 +7,93 @@ import { urlPrefix } from '../../__mocks__/variables';
 import app from '../../app';
 
 describe('Organization auth', () => {
-    let userId;
-    let tokenLog;
-    describe('Signup with email', () => {
-        test('should sign up the user', async () => {
-            const resp = await request(app)
-                .post(`${urlPrefix}/auth/signup`)
-                .send(organization);
-            userId = resp.body.user._id;
-            tokenLog = resp.body.token;
-            expect(resp.status).toBe(201);
-            expect(resp.body).toHaveProperty('token');
-        });
-
-        test('should not sign up the user with the username which already exist', async () => {
-            const resp = await request(app)
-                .post(`${urlPrefix}/auth/signup`)
-                .send(organization);
-            expect(resp.status).toBe(409);
-            expect(resp.body.message).toBe('Username already exist');
-        });
-
-        test('should not sign up the user with the email which already exist', async () => {
-            const badOrg = organization;
-            badOrg.username = 'new_username';
-            const resp = await request(app)
-                .post(`${urlPrefix}/auth/signup`)
-                .send(badOrg);
-            expect(resp.status).toBe(409);
-            expect(resp.body.message).toBe('Email already exist');
-        });
+  let userId;
+  let tokenLog;
+  describe('Signup with email', () => {
+    test('should sign up the user', async () => {
+      const resp = await request(app)
+        .post(`${urlPrefix}/auth/signup`)
+        .send(organization);
+      userId = resp.body.user._id;
+      tokenLog = resp.body.token;
+      expect(resp.status).toBe(201);
+      expect(resp.body).toHaveProperty('token');
     });
 
-    describe('Email verification', () => {
-        const { username, password } = organization;
-
-        test('should not log the user in when the account is not verified', async () => {
-            const resp = await request(app)
-                .post(`${urlPrefix}/auth/login`)
-                .send({ username, password });
-            expect(resp.status).toBe(403);
-            expect(resp.body.message).toBe('Check your email for account verification');
-        });
-
-        test('should verify the account', async () => {
-            const resp = await request(app).get(`${urlPrefix}/auth/verification/${tokenLog}`);
-            expect(resp.status).toBe(200);
-            expect(resp.body.message).toBe('Your account has been verified successfully');
-        });
-
-        test('should not verify the account when it is already verified', async () => {
-            const resp = await request(app).get(`${urlPrefix}/auth/verification/${tokenLog}`);
-            expect(resp.status).toBe(400);
-            expect(resp.body.message).toBe('Your account has already been verified');
-        });
-
-        test('should not verify the account when the token has expired', async () => {
-            const expiredToken = jwt.sign({ id: userId }, process.env.SECRET, {
-                expiresIn: '0.1s',
-            });
-            const resp = await request(app).get(`${urlPrefix}/auth/verification/${expiredToken}`);
-            expect(resp.status).toBe(401);
-            expect(resp.body.message).toBe('Your verification email has expired, try to login to receive a new one');
-        });
+    test('should not sign up the user with the username which already exist', async () => {
+      const resp = await request(app)
+        .post(`${urlPrefix}/auth/signup`)
+        .send(organization);
+      expect(resp.status).toBe(409);
+      expect(resp.body.message).toBe('Username already exist');
     });
 
-    describe('login with username or email verification', () => {
-        test('should log the user in', async () => {
-            const resp = await request(app)
-                .post(`${urlPrefix}/auth/login`)
-                .send({ username: 'company_name', password: 'CompanyName123' });
-            expect(resp.status).toBe(200);
-            expect(resp.body).toHaveProperty('token');
-        });
+    test('should not sign up the user with the email which already exist', async () => {
+      const badOrg = organization;
+      badOrg.username = 'new_username';
+      const resp = await request(app)
+        .post(`${urlPrefix}/auth/signup`)
+        .send(badOrg);
+      expect(resp.status).toBe(409);
+      expect(resp.body.message).toBe('Email already exist');
+    });
+  });
 
-        test('should not log the user in with wrong credentials', async () => {
-            const resp = await request(app)
-                .post(`${urlPrefix}/auth/login`)
-                .send({ username: 'company', password: 'CompanyN1233' });
-            expect(resp.status).toBe(401);
-            expect(resp.body.message).toBe('The credentials you provided are incorrect');
-        });
+  describe('Email verification', () => {
+    const { username, password } = organization;
+
+    test('should not log the user in when the account is not verified', async () => {
+      const resp = await request(app)
+        .post(`${urlPrefix}/auth/login`)
+        .send({ username, password });
+      expect(resp.status).toBe(403);
+      expect(resp.body.message).toBe('Check your email for account verification',);
     });
 
-    afterAll(async () => {
-        await User.deleteOne({ email: organization.email });
-        await Organization.deleteMany({});
-        await app.close();
-        await mongoose.disconnect();
+    test('should verify the account', async () => {
+      const resp = await request(app).get(`${urlPrefix}/auth/verification/${tokenLog}`,);
+      expect(resp.status).toBe(200);
+      expect(resp.body.message).toBe('Your account has been verified successfully',);
     });
+
+    test('should not verify the account when it is already verified', async () => {
+      const resp = await request(app).get(`${urlPrefix}/auth/verification/${tokenLog}`,);
+      expect(resp.status).toBe(400);
+      expect(resp.body.message).toBe('Your account has already been verified');
+    });
+
+    test('should not verify the account when the token has expired', async () => {
+      const expiredToken = jwt.sign({ id: userId }, process.env.SECRET, {
+        expiresIn: '0.1s',
+      });
+      const resp = await request(app).get(`${urlPrefix}/auth/verification/${expiredToken}`,);
+      expect(resp.status).toBe(401);
+      expect(resp.body.message).toBe('Your verification email has expired, try to login to receive a new one',);
+    });
+  });
+
+  describe('login with username or email verification', () => {
+    test('should log the user in', async () => {
+      const resp = await request(app)
+        .post(`${urlPrefix}/auth/login`)
+        .send({ username: 'company_name', password: 'CompanyName123' });
+      expect(resp.status).toBe(200);
+      expect(resp.body).toHaveProperty('token');
+    });
+
+    test('should not log the user in with wrong credentials', async () => {
+      const resp = await request(app)
+        .post(`${urlPrefix}/auth/login`)
+        .send({ username: 'company', password: 'CompanyN1233' });
+      expect(resp.status).toBe(401);
+      expect(resp.body.message).toBe('The credentials you provided are incorrect',);
+    });
+  });
+
+  afterAll(async () => {
+    await User.deleteOne({ email: organization.email });
+    await Organization.deleteMany({});
+    await app.close();
+    await mongoose.disconnect();
+  });
 });
