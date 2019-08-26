@@ -11,6 +11,7 @@ import {
   asyncHandler,
   checkPost,
   checkPostComment,
+  checkPostAndJob,
 } from '../../../middlewares';
 
 const router = express.Router();
@@ -61,5 +62,13 @@ router
   .route('/:postSlug/like')
   .post(checkAuth, checkPost, asyncHandler(LikesController.likePost))
   .delete(checkAuth, checkPost, asyncHandler(LikesController.unlikePost));
+router
+  .route('/:postSlug/share/:plateforme')
+  .post(
+    checkAuth,
+    celebrate({ params: postValidator.sharePost }),
+    checkPostAndJob,
+    asyncHandler(PostController.sharePost),
+  );
 
 export default router;
