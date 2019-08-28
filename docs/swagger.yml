@@ -479,6 +479,26 @@ paths:
         '404':
           description: User not found
 
+  /organizations:
+    get:
+      summary: 'Get all organizations'
+      tags:
+        - 'Organizations'
+      responses:
+        '200':
+          description: Return the list of all organizations
+
+  /organizations/{organizationId}:
+    get:
+      summary: 'Get a single organization'
+      tags:
+        - 'Organizations'
+      responses:
+        '200':
+          description: Return the organization
+        '404':
+          description: Organization does not exist
+
 
   /user:
     get:
