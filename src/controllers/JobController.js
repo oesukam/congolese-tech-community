@@ -1,6 +1,6 @@
 import { Job } from '../models';
 import { statusCodes, responseMessages } from '../constants';
-
+import { notifEvents } from '../middlewares/registerEvents';
 /**
  * @description Job Controller class
  */
@@ -21,6 +21,14 @@ export default class JobController {
     };
 
     const job = await Job.create({ ...body, author: currentUser._id });
+
+    notifEvents.emit('create-index', {
+      title: job.title,
+      objectID: job.slug,
+      resource: 'job',
+      image: job.image,
+      keywords: `${job.tags.join(' ')}`,
+    });
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
@@ -52,6 +60,14 @@ export default class JobController {
 
     await job.updateOne({ ...body });
 
+    notifEvents.emit('update-index', {
+      title: body.title,
+      objectID: job.slug,
+      resource: 'job',
+      image: body.image,
+      keywords: `${job.tags.join(' ')}`,
+    });
+
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
       job: { ...job.toObject(), ...body },
@@ -78,6 +94,8 @@ export default class JobController {
     }
 
     await job.updateOne({ status: 'deleted' });
+
+    notifEvents.emit('delete-index', job.slug);
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
