@@ -20,7 +20,11 @@ export default class PostController {
       image: currentUser.image,
     };
 
-    const post = await Post.create({ ...body, author: currentUser._id });
+    const post = await Post.create({
+      ...body,
+      author: currentUser._id,
+      userType: currentUser.userType,
+    });
 
     notifEvents.emit('create-index', {
       title: post.title,
@@ -145,16 +149,14 @@ export default class PostController {
    * @returns {Object} Returns the response
    */
   static async sharePost(req, res) {
-    const { currentUser, post = null, job = null } = req;
+    const { currentUser, post } = req;
     const { plateforme } = req.params;
     if (post) await post.updateOne({ sharesCount: post.sharesCount + 1 });
-    if (job) await job.updateOne({ sharesCount: job.sharesCount + 1 });
 
     const newShare = {
       plateforme,
       user: currentUser._id,
-      post: post ? post._id : null,
-      job: job ? job._id : null,
+      post: post._id,
     };
 
     const share = await Share.create(newShare);

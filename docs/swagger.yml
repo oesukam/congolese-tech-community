@@ -1434,29 +1434,17 @@ paths:
               message:
                 type: string
                 example: Notifications enabled
-  /users/stats:
+  /feeds:
     get:
+      summary: 'get home feeds'
+      security:
+        - bearerAuth: []
       tags:
-        - 'Users'
-      summary: reading statistics
-      operationId: readStats
-      parameters:
-        - name: Authorization
-          in: header
-          description: JWT Token
-          required: true
-          type: string
+        - 'Feeds'
       responses:
         '200':
-          description: returns reading statistics
-          schema:
-            type: object
-            properties:
-              status:
-                type: number
-                example: 200
-              readingStats:
-                type: number
+          description: Return the home feeds
+
 definitions:
   user:
     type: object

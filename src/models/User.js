@@ -59,7 +59,7 @@ const UserSchema = new Schema({
   },
   userType: {
     type: String,
-    default: 'user',
+    default: 'person',
   },
   verified: {
     type: Boolean,
