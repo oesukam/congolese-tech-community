@@ -14,7 +14,8 @@ const res = {
 };
 
 describe('Social login', () => {
-  beforeAll(() => {
+  beforeAll(async () => {
+    await User.deleteOne({ email: user.emails[0].value });
     jest.spyOn(res, 'status');
   });
 

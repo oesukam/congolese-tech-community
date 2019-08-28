@@ -1,6 +1,5 @@
 import { Post, Share } from '../models';
 import { statusCodes, responseMessages } from '../constants';
-
 /**
  * @description Post Controller class
  */

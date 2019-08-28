@@ -13,7 +13,8 @@ module.exports = {
     'src/models/index.js',
     'src/middlewares/joiErrors.js',
     'src/middlewares/asyncHandler.js',
-    'src/config/passport.js',
+    'src/config',
+    'src/constants',
     'src/helpers/sendMail.js',
     'src/helpers/mailer.js',
   ],
@@ -22,7 +23,7 @@ module.exports = {
     global: {
       functions: 80,
       lines: 80,
-      statements: -11,
+      statements: -20,
     },
   },
   transform: {

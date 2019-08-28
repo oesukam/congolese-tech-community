@@ -12,7 +12,7 @@ let job;
 describe('Shares', () => {
   beforeAll(async () => {
     const user1 = await User.findOne({ username: 'admin' });
-    const tokenData = await Token.findOne({ _userId: user1._id }).sort({
+    const tokenData = await Token.findOne({ user: user1._id }).sort({
       createdAt: -1,
     });
 

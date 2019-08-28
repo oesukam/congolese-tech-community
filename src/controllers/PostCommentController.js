@@ -1,6 +1,7 @@
 import { PostComment } from '../models';
 import { statusCodes, responseMessages } from '../constants';
 import { PAGE_LIMIT } from '../constants/shared';
+import { notifEvents } from '../middlewares/registerEvents';
 
 /**
  * @description PostComment Controller class
@@ -14,10 +15,17 @@ export default class PostCommentController {
    * @returns {Object} Returns the response
    */
   static async createPostComment(req, res) {
-    const { currentUser, body, post } = req;
+    const { currentUser, body, post, token } = req;
     body.author = currentUser._id;
     body.post = post._id;
     const postComment = await PostComment.create(body);
+
+    notifEvents.emit('post-commented', {
+      currentUser: currentUser.toObject(),
+      token: token.toObject(),
+      post: post.toObject(),
+      action: 'commented',
+    });
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,

@@ -12,14 +12,14 @@ let recommededTokenData, recommededUsertoken, recommendedUser;
 const recommendation = { id: null };
 beforeAll(async () => {
   user = await User.findOne({ username: 'admin' });
-  tokenData = await Token.findOne({ _userId: user._id }).sort({
+  tokenData = await Token.findOne({ user: user._id }).sort({
     createdAt: -1,
   });
   token = `Bearer ${tokenData.token}`;
 
   recommendedUser = await User.findOne({ username: 'lungu' });
   recommededTokenData = await Token.findOne({
-    _userId: recommendedUser._id,
+    user: recommendedUser._id,
   }).sort({
     createdAt: -1,
   });
@@ -43,9 +43,7 @@ describe('Recommendations', () => {
         .send(recommendationDescritption);
       recommendation.id = res.body.recommendation._id;
       expect(res.status).toBe(statusCodes.OK);
-      expect(res.body.recommendation.description).toBe(
-        recommendationDescritption.description,
-      );
+      expect(res.body.recommendation.description).toBe(recommendationDescritption.description,);
     });
 
     test('should not find the user', async () => {
@@ -63,9 +61,7 @@ describe('Recommendations', () => {
         .set('Authorization', token)
         .send(recommendationDescritption);
       expect(res.status).toBe(statusCodes.FORBIDDEN);
-      expect(res.body.message).toBe(
-        responseMessages.notAllowed('You are', 'recommend yourself'),
-      );
+      expect(res.body.message).toBe(responseMessages.notAllowed('You are', 'recommend yourself'),);
     });
   });
 
@@ -91,9 +87,7 @@ describe('Recommendations', () => {
         .post(`${urlPrefix}/recommendations/5cafc73bcba95353169fb518/approve`)
         .set('Authorization', token);
       expect(res.status).toBe(statusCodes.NOT_FOUND);
-      expect(res.body.message).toBe(
-        responseMessages.notExist('The recommendation'),
-      );
+      expect(res.body.message).toBe(responseMessages.notExist('The recommendation'),);
     });
 
     test('should forbid a user to approve not owned recommendations', async () => {
@@ -102,9 +96,7 @@ describe('Recommendations', () => {
         .set('Authorization', token)
         .send(recommendationDescritption);
       expect(res.status).toBe(statusCodes.FORBIDDEN);
-      expect(res.body.message).toBe(
-        responseMessages.notAllowed('You are', 'approve this recommendation'),
-      );
+      expect(res.body.message).toBe(responseMessages.notAllowed('You are', 'approve this recommendation'),);
     });
   });
 
@@ -130,9 +122,7 @@ describe('Recommendations', () => {
         .delete(`${urlPrefix}/recommendations/5cafc73bcba95353169fb518/approve`)
         .set('Authorization', token);
       expect(res.status).toBe(statusCodes.NOT_FOUND);
-      expect(res.body.message).toBe(
-        responseMessages.notExist('The recommendation'),
-      );
+      expect(res.body.message).toBe(responseMessages.notExist('The recommendation'),);
     });
 
     test('should forbid a user to disapprove not owned recommendations', async () => {
@@ -141,12 +131,10 @@ describe('Recommendations', () => {
         .set('Authorization', token)
         .send(recommendationDescritption);
       expect(res.status).toBe(statusCodes.FORBIDDEN);
-      expect(res.body.message).toBe(
-        responseMessages.notAllowed(
+      expect(res.body.message).toBe(responseMessages.notAllowed(
           'You are',
           'disapprove this recommendation',
-        ),
-      );
+        ),);
     });
   });
 
@@ -174,9 +162,7 @@ describe('Recommendations', () => {
         .set('Authorization', token)
         .send(recommendationDescritption);
       expect(res.status).toBe(statusCodes.NOT_FOUND);
-      expect(res.body.message).toBe(
-        responseMessages.notExist('The recommendation'),
-      );
+      expect(res.body.message).toBe(responseMessages.notExist('The recommendation'),);
     });
 
     test('should forbid a user to update owned recommendations', async () => {
@@ -185,17 +171,13 @@ describe('Recommendations', () => {
         .set('Authorization', recommededUsertoken)
         .send(recommendationDescritption);
       expect(res.status).toBe(statusCodes.FORBIDDEN);
-      expect(res.body.message).toBe(
-        responseMessages.notAllowed('You are', 'update this recommendation'),
-      );
+      expect(res.body.message).toBe(responseMessages.notAllowed('You are', 'update this recommendation'),);
     });
   });
 
   describe('Get user recommendations', () => {
     test('should return an array of recommendations', async () => {
-      const res = await request(app).get(
-        `${urlPrefix}/recommendations/${recommendedUser.username}`,
-      );
+      const res = await request(app).get(`${urlPrefix}/recommendations/${recommendedUser.username}`,);
       expect(res.status).toBe(statusCodes.OK);
       expect(res.body.recommendations).toEqual(expect.any(Array));
     });

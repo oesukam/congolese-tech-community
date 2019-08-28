@@ -13,7 +13,7 @@ const username2 = 'user';
 describe('Follow', () => {
   beforeAll(async () => {
     user1 = await User.findOne({ username: username1 });
-    tokenData = await Token.findOne({ _userId: user1._id }).sort({
+    tokenData = await Token.findOne({ user: user1._id }).sort({
       createdAt: -1,
     });
     token = `Bearer ${tokenData.token}`;

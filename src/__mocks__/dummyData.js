@@ -78,4 +78,8 @@ module.exports = {
   postCommentData: {
     body: 'Post comment',
   },
+  notificationData: {
+    link: 'https://localhost:3000/posts/postId',
+    content: 'notificatioToken',
+  },
 };
