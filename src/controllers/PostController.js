@@ -1,4 +1,4 @@
-import { Post } from '../models';
+import { Post, Share } from '../models';
 import { statusCodes, responseMessages } from '../constants';
 /**
  * @description Post Controller class
@@ -116,6 +116,34 @@ export default class PostController {
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
       posts,
+    });
+  }
+
+  /**
+   * @author Karl Musingo
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Returns the response
+   */
+  static async sharePost(req, res) {
+    const { currentUser, post = null, job = null } = req;
+    const { plateforme } = req.params;
+    if (post) await post.updateOne({ sharesCount: post.sharesCount + 1 });
+    if (job) await job.updateOne({ sharesCount: job.sharesCount + 1 });
+
+    const newShare = {
+      plateforme,
+      user: currentUser._id,
+      post: post ? post._id : null,
+      job: job ? job._id : null,
+    };
+
+    const share = await Share.create(newShare);
+
+    return res.status(statusCodes.OK).json({
+      status: statusCodes.OK,
+      message: responseMessages.updated('Post'),
+      share,
     });
   }
 }

@@ -42,6 +42,12 @@ module.exports = {
     email: 'company@name.com',
     password: 'CompanyName123',
   },
+  organizationShare: {
+    companyName: 'company name',
+    username: 'company-name_share',
+    email: 'company-share@name.com',
+    password: 'CompanyName123',
+  },
   organizationUser: {
     companyName: 'company name',
     username: 'company_name_user',

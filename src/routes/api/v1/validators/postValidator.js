@@ -30,7 +30,13 @@ const updatePost = Joi.object().keys({
     .items(Joi.string().trim()),
 });
 
+const sharePost = {
+  postSlug: Joi.string().required(),
+  plateforme: Joi.string().valid('facebook', 'twitter', 'mail'),
+};
+
 export default {
   createPost,
   updatePost,
+  sharePost,
 };
