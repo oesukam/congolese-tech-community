@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test": "NODE_ENV=test npm run seed && jest --coverage --runInBand --detectOpenHandles --forceExit",
+    "test": "NODE_ENV=test npm run seed && NODE_ENV=test jest --coverage --runInBand --detectOpenHandles --forceExit",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "dev": "babel-watch src/index.js",
     "start": "babel-node src/index.js",
@@ -12,7 +12,7 @@
     "build": "babel src --out-dir dist --ignore 'src/__tests__,src/__mocks__'",
     "lint": "node_modules/.bin/eslint .",
     "lint:fix": "prettier-eslint --write '**/*.js'",
-    "seed": "babel-node src/seeders/index.js",
+    "seed": "NODE_ENV=test babel-node src/seeders/index.js",
     "drop": "babel-node src/seeders/dropCollections.js",
     "drop:test": "NODE_ENV=test npm run drop"
   },

@@ -35,7 +35,7 @@ class Authentication {
   static async generateToken(_id) {
     const token = jwt.sign({ _id }, SECRET, { expiresIn: '2d' });
     await Token.create({
-      _userId: _id,
+      user: _id,
       token
     });
     return token;

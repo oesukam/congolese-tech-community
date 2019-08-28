@@ -22,5 +22,17 @@ export default [
     country: 'CD',
     city: 'Kinshasa',
     verified: true,
-  }
+  },
+  {
+    firstName: 'User',
+    lastName: 'User',
+    middleName: 'User',
+    status: 'active',
+    username: 'user',
+    email: 'user@email.com',
+    userType: 'user',
+    country: 'CD',
+    city: 'Kinshasa',
+    verified: true,
+  },
 ];

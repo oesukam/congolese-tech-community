@@ -9,6 +9,7 @@ import educations from './educations';
 import experiences from './experiences';
 import projects from './projects';
 import notifications from './notifications';
+import follow from './follow';
 
 const router = express.Router();
 
@@ -22,5 +23,6 @@ router.use('/educations', educations);
 router.use('/experiences', experiences);
 router.use('/projects', projects);
 router.use('/notifications', notifications);
+router.use('/follow', follow);
 
 export default router;

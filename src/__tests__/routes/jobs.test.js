@@ -3,7 +3,7 @@ import app from '../../app';
 import { jobData, jobCategoryData } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
 import { User, Token, JobCategory, Job } from '../../models';
-import * as statusCodes from '../../constants/statusCodes';
+import { statusCodes, responseMessages } from '../../constants';
 import slugString from '../../helpers/slugString';
 
 let tokenData;
@@ -93,6 +93,56 @@ describe('jobs', () => {
         .send(jobData);
       expect(res.status).toBe(statusCodes.OK);
       expect(res.body.job).toHaveProperty('title');
+    });
+  });
+
+  describe('like a job', () => {
+    test('should return `Unauthorized access`', async () => {
+      const res = await request(app)
+        .post(`${urlPrefix}/jobs/jobSlug/like`)
+      expect(res.status).toBe(statusCodes.UNAUTHORIZED);
+      expect(res.body.message).toBe('Unauthorized access');
+    });
+
+    test('should like a job', async () => {
+      const res = await request(app)
+        .post(`${urlPrefix}/jobs/${jobSlug}/like`)
+        .set('Authorization', token)
+      expect(res.status).toBe(statusCodes.OK);
+      expect(res.body.message).toBe('Job successfully liked');
+    });
+
+    test('should return a conflict', async () => {
+      const res = await request(app)
+        .post(`${urlPrefix}/jobs/${jobSlug}/like`)
+        .set('Authorization', token)
+      expect(res.status).toBe(statusCodes.CONFLICT);
+      expect(res.body.message).toBe(responseMessages.alreadyLike('job'));
+    });
+  });
+
+  describe('unlike a job', () => {
+    test('should return `Unauthorized access`', async () => {
+      const res = await request(app)
+        .post(`${urlPrefix}/jobs/jobSlug/like`)
+      expect(res.status).toBe(statusCodes.UNAUTHORIZED);
+      expect(res.body.message).toBe('Unauthorized access');
+    });
+
+    test('should like a job', async () => {
+      const res = await request(app)
+        .delete(`${urlPrefix}/jobs/${jobSlug}/like`)
+        .set('Authorization', token)
+      expect(res.status).toBe(statusCodes.OK);
+      expect(res.body.message).toBe('Job successfully unliked');
+    });
+
+    test('should return a conflict', async () => {
+      const res = await request(app)
+        .delete(`${urlPrefix}/jobs/${jobSlug}/like`)
+        .set('Authorization', token)
+      expect(res.status).toBe(statusCodes.CONFLICT);
+      expect(res.body.message).toBe(responseMessages.notLiked('job'));
     });
   });
 

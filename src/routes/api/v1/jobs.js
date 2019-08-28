@@ -1,6 +1,6 @@
 import express from 'express';
 import { celebrate } from 'celebrate';
-import { JobController, JobCategoryController } from '../../../controllers';
+import { JobController, JobCategoryController, LikesController } from '../../../controllers';
 import { jobValidator, jobCategoryValidator } from './validators';
 import {
   checkAuth,
@@ -46,6 +46,7 @@ router
   .post(
     checkAuth,
     celebrate({ body: jobValidator.createJob }),
+    checkJobCategory,
     asyncHandler(JobController.createJob),
   )
   .get(asyncHandler(JobController.getJobs));
@@ -60,5 +61,16 @@ router
     asyncHandler(JobController.updateJob),
   )
   .delete(checkAuth, asyncHandler(JobController.deleteJob));
+
+router.route('/:jobSlug/like')
+  .post(
+    checkAuth,
+    checkJob,
+    asyncHandler(LikesController.likeJob),
+  ).delete(
+    checkAuth,
+    checkJob,
+    asyncHandler(LikesController.unlikejob),
+  );
 
 export default router;
