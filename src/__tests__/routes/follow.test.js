@@ -16,6 +16,8 @@ describe('Follow', () => {
     tokenData = await Token.findOne({ _userId: user1._id }).sort({
       createdAt: -1,
     });
+    console.log('====', tokenData);
+    console.log('====User1', user1);
     token = `Bearer ${tokenData.token}`;
   });
 
