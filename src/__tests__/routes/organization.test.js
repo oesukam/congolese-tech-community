@@ -63,7 +63,7 @@ describe('Organization auth', () => {
     });
 
     test('should not verify the account when the token has expired', async () => {
-      const expiredToken = jwt.sign({ id: userId }, process.env.SECRET, {
+      const expiredToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
         expiresIn: '0.1s',
       });
       const resp = await request(app).get(`${urlPrefix}/auth/verification/${expiredToken}`);
