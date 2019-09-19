@@ -25,10 +25,14 @@ webPush.setVapidDetails(
   PUSH_PRIVATE_VAPID_KEY,
 );
 
-connectDb().then(async () => {
-  logger.info('Mongodb connected');
-  registerEvents();
-});
+connectDb()
+  .then(async () => {
+    logger.info('Mongodb connected');
+    registerEvents();
+  })
+  .catch(error => {
+    logger.info('Could not connect to Mongodb', error);
+  });
 
 app.use(cors());
 app.use(passport.initialize());

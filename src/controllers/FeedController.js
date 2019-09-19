@@ -17,13 +17,12 @@ export default class FeedController {
   static async getFeed(req, res) {
     const { offset = 0, limit = 20 } = req.query;
 
-    const posts = await Post.find({})
+    const feed = await Post.find({})
       .select('-__v')
-      .populate('author', '-_id -__v -password');
-
-    const feed = posts
-      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
-      .filter((item, index) => index > offset && index <= limit);
+      .populate('author', '-_id -__v -password')
+      .sort({ createdAt: -1 })
+      .skip(offset)
+      .limit(limit);
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
@@ -43,13 +42,12 @@ export default class FeedController {
   static async getOrganizations(req, res) {
     const { offset = 0, limit = 20 } = req.query;
 
-    const posts = await Post.find({ userType: 'organization' })
+    const feed = await Post.find({ userType: 'organization' })
       .select('-__v')
-      .populate('author', '-_id -__v -password');
-
-    const feed = posts
-      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
-      .filter((item, index) => index > offset && index <= limit);
+      .populate('author', '-_id -__v -password')
+      .sort({ createdAt: -1 })
+      .skip(offset)
+      .limit(limit);
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
