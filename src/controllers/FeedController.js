@@ -1,10 +1,41 @@
-import { Post } from '../models';
+/* eslint-disable class-methods-use-this */
+import { Post, Like } from '../models';
 import { statusCodes } from '../constants';
 
 /**
  * @description Feed Controller class
  */
 export default class FeedController {
+  /**
+   * Checks the user
+   *
+   * @static
+   * @param {*} currentUser
+   * @param {*} feed
+   * @memberof FeedController
+   * @returns {object} feed
+   */
+  static async checkLikes(currentUser, feed) {
+    if (currentUser) {
+      const likes = await Like.find({ user: currentUser._id })
+        .lean()
+        .exec();
+
+      feed = feed.map(post => {
+        const match = likes.find(
+          like =>
+            currentUser._id.equals(like.user) && post._id.equals(like.post),
+        );
+        if (match) return { ...post.toObject(), liked: true };
+        return post;
+      });
+
+      return feed;
+    }
+
+    return feed;
+  }
+
   /**
    * Get all feed
    *
@@ -16,13 +47,16 @@ export default class FeedController {
    */
   static async getFeed(req, res) {
     const { offset = 0, limit = 20 } = req.query;
+    const { currentUser } = req;
 
-    const feed = await Post.find({})
+    let feed = await Post.find({})
       .select('-__v')
       .populate('author', '-_id -__v -password')
       .sort({ createdAt: -1 })
       .skip(offset)
       .limit(limit);
+
+    feed = await FeedController.checkLikes(currentUser, feed);
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
@@ -39,15 +73,18 @@ export default class FeedController {
    * @returns {void} feed
    * @memberof FeedController
    */
-  static async getOrganizations(req, res) {
+  static async getOrganizationsFeed(req, res) {
     const { offset = 0, limit = 20 } = req.query;
+    const { currentUser } = req;
 
-    const feed = await Post.find({ userType: 'organization' })
+    let feed = await Post.find({ userType: 'organization' })
       .select('-__v')
       .populate('author', '-_id -__v -password')
       .sort({ createdAt: -1 })
       .skip(offset)
       .limit(limit);
+
+    feed = await FeedController.checkLikes(currentUser, feed);
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
