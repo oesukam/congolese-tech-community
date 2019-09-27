@@ -20,11 +20,6 @@ describe('Social login', () => {
     expect(res.redirect).toHaveBeenCalled();
   });
 
-  it('Should mock the social login controller for an existing account', async () => {
-    await AuthController.socialAuth({ user }, res);
-    expect(res.redirect).toHaveBeenCalled();
-  });
-
   it('Should mock the failing scenario when null values are provided', async () => {
     await AuthController.socialAuth(
       {
