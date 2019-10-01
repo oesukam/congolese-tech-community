@@ -39,6 +39,10 @@ const personSchema = new Schema({
     type: [String],
     default: [],
   },
+  profession: {
+    type: String,
+    default: 'Technologist',
+  },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
   educations: [{ type: Schema.Types.ObjectId, ref: 'PersonEducation' }],
   experiences: [{ type: Schema.Types.ObjectId, ref: 'PersonExperience' }],
