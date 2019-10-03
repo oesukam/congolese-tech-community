@@ -1,6 +1,6 @@
 import { Joi } from 'celebrate';
 
-const create = Joi.object().keys({
+const post = Joi.object().keys({
   name: Joi.string()
     .trim()
     .required(),
@@ -30,5 +30,5 @@ const create = Joi.object().keys({
 });
 
 export default {
-  create,
+  post,
 };
