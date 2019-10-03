@@ -21,9 +21,12 @@ router
 
 router
   .route('/:organizationId')
-  .get(
-    asyncHandler(checkOrganization),
-    asyncHandler(OrganizationController.get),
+  .all(asyncHandler(checkOrganization))
+  .get(asyncHandler(OrganizationController.get))
+  .put(
+    checkAuth,
+    celebrate({ body: organizationValidator.update }),
+    asyncHandler(OrganizationController.update),
   );
 
 export default router;

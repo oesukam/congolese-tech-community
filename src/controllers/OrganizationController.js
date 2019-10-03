@@ -16,7 +16,7 @@ export default class OrganizationsController {
    */
   static async getAll(req, res) {
     const organizations = await Organization.find({})
-      .populate('user')
+      .populate('user', 'picture username firstName lastName')
       .exec();
 
     return res.status(statusCodes.OK).json({
@@ -69,10 +69,38 @@ export default class OrganizationsController {
     body.user = currentUser._id;
     const organization = await Organization.create(body);
 
-    return res.status(statusCodes.OK).json({
-      status: statusCodes.OK,
+    return res.status(statusCodes.CREATED).json({
+      status: statusCodes.CREATED,
       organization,
       message: responseMessages.created('Organization'),
+    });
+  }
+
+  /**
+   * Update an organization
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {void} organization
+   * @memberof OrganizationsController
+   */
+  static async update(req, res) {
+    const { body, currentUser, organization } = req;
+
+    if (!currentUser._id.equals(organization.user._id)) {
+      return res.status(statusCodes.UNAUTHORIZED).json({
+        status: statusCodes.UNAUTHORIZED,
+        message: responseMessages.unauthorized(),
+      });
+    }
+
+    await organization.updateOne(body);
+
+    return res.status(statusCodes.OK).json({
+      status: statusCodes.OK,
+      organization: { ...organization.toObject(), ...body },
+      message: responseMessages.updated('Organization'),
     });
   }
 }
