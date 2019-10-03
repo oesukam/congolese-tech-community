@@ -8,13 +8,15 @@ const OrganizationSchema = {
   registrationNumber: {
     type: String,
   },
-  employeesNumber: {
-    type: Number,
-  },
   description: {
     type: String,
   },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
+  admins: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  employees: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  employeesNumber: {
+    type: Number,
+  },
   createdAt: {
     type: Date,
     default: new Date(),

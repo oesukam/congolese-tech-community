@@ -129,27 +129,6 @@ describe('Organization auth', () => {
       expect(resp.status).toBe(200);
       expect(resp.body.organization.name).toBe('company name 2');
     });
-
-    // it('gets a single organization', async () => {
-    //   const resp = await request(app)
-    //     .get(`${urlPrefix}/organizations/${userId}`);
-    //   expect(resp.status).toBe(200);
-    //   expect(resp.body.organization.name).toBe('company name');
-    // });
-
-    // it('Returns a message when an organization is not found', async () => {
-    //   const resp = await request(app)
-    //     .get(`${urlPrefix}/organizations/9cef8a70a12d893fd282dfb8`);
-    //   expect(resp.status).toBe(404);
-    //   expect(resp.body.message).toBe('Organization does not exist');
-    // });
-
-    // it('Returns a message when an organization Id format is invalid', async () => {
-    //   const resp = await request(app)
-    //     .get(`${urlPrefix}/organizations/wrongFormatOrganizationID`);
-    //   expect(resp.status).toBe(400);
-    //   expect(resp.body.message).toBe('Wrong Id format');
-    // });
   });
 
   afterAll(async () => {

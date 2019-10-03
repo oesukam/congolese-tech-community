@@ -42,6 +42,17 @@ module.exports = {
     email: 'company@name.com',
     password: 'CompanyName123',
   },
+  organizationData: {
+    picture: 'picture',
+    name: 'company name',
+    registrationNumber: '111111',
+    country: 'DRCongo',
+    province: 'Oriental',
+    city: 'DRCongo',
+    email: 'email@gmail.com',
+    description:
+      "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
+  },
   organizationShare: {
     companyName: 'company name',
     username: 'company-name_share',
