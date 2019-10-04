@@ -134,7 +134,7 @@ export default class PostController {
   static async getPosts(req, res) {
     const posts = await Post.find({})
       .select('-__v')
-      .populate('author', '-_id -__v -userType -password');
+      .populate('author', 'picture username firstName lastName followerCount followedCount country city ');
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
