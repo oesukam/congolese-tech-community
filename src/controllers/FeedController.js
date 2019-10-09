@@ -49,7 +49,7 @@ export default class FeedController {
     const { offset = 0, limit = 20 } = req.query;
     const { currentUser } = req;
 
-    let feed = await Post.find({})
+    let feed = await Post.find({ status: { $ne: 'deleted' } })
       .select('-__v')
       .populate('author', '-_id -__v -password')
       .sort({ createdAt: -1 })
@@ -77,7 +77,10 @@ export default class FeedController {
     const { offset = 0, limit = 20 } = req.query;
     const { currentUser } = req;
 
-    let feed = await Post.find({ userType: 'organization' })
+    let feed = await Post.find({
+      userType: 'organization',
+      status: { $ne: 'deleted' },
+    })
       .select('-__v')
       .populate('author', '-_id -__v -password')
       .sort({ createdAt: -1 })
