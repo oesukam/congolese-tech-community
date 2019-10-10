@@ -1,5 +1,5 @@
 import { Organization } from '../models';
-import { statusCodes, responseMessages } from '../constants';
+import { statusCodes, responseMessages, PAGE_LIMIT } from '../constants';
 
 /**
  * @description Organization Controller class
@@ -15,11 +15,18 @@ export default class OrganizationsController {
    * @memberof OrganizationsController
    */
   static async getAll(req, res) {
-    const organizations = await Organization.find({
-      status: { $ne: 'deleted' },
-    })
-      .populate('user', 'picture username firstName lastName')
-      .exec();
+    const { page = 1 } = req.query;
+    const organizations = await Organization.paginate(
+      {
+        status: { $ne: 'deleted' },
+      },
+      {
+        select: 'picture username firstName lastName',
+        populate: 'user',
+        limit: PAGE_LIMIT,
+        offset: page - 1,
+      },
+    );
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
