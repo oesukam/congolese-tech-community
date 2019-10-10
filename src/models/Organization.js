@@ -17,6 +17,10 @@ const OrganizationSchema = {
   employeesNumber: {
     type: Number,
   },
+  status: {
+    type: String,
+    default: 'active',
+  },
   createdAt: {
     type: Date,
     default: new Date(),

@@ -15,7 +15,9 @@ export default class OrganizationsController {
    * @memberof OrganizationsController
    */
   static async getAll(req, res) {
-    const organizations = await Organization.find({})
+    const organizations = await Organization.find({
+      status: { $ne: 'deleted' },
+    })
       .populate('user', 'picture username firstName lastName')
       .exec();
 
@@ -101,6 +103,34 @@ export default class OrganizationsController {
       status: statusCodes.OK,
       organization: { ...organization.toObject(), ...body },
       message: responseMessages.updated('Organization'),
+    });
+  }
+
+  /**
+   * Update an organization
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {void} organization
+   * @memberof OrganizationsController
+   */
+  static async delete(req, res) {
+    const { body, currentUser, organization } = req;
+
+    if (!currentUser._id.equals(organization.user._id)) {
+      return res.status(statusCodes.UNAUTHORIZED).json({
+        status: statusCodes.UNAUTHORIZED,
+        message: responseMessages.unauthorized(),
+      });
+    }
+
+    await organization.updateOne({ status: 'deleted' });
+
+    return res.status(statusCodes.OK).json({
+      status: statusCodes.OK,
+      organization: { ...organization.toObject(), ...body },
+      message: responseMessages.deleted('Organization'),
     });
   }
 }
