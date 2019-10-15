@@ -26,6 +26,7 @@ const updateProfile = Joi.object().keys({
   bio: Joi.string()
     .trim()
     .min(20),
+  profession: Joi.string().max(50).min(2), 
 });
 
 export default {
