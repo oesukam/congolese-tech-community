@@ -82,12 +82,6 @@ describe('Organization auth', () => {
       expect(resp.body.organizations).toBeDefined();
     });
 
-    it('gets a single organization', async () => {
-      const resp = await request(app).get(`${urlPrefix}/organizations/${organizationId}`,);
-      expect(resp.status).toBe(200);
-      expect(resp.body.organization.name).toBe('company name');
-    });
-
     it('Returns a message when an organization is not found', async () => {
       const resp = await request(app).get(`${urlPrefix}/organizations/9cef8a70a12d893fd282dfb8`,);
       expect(resp.status).toBe(404);
