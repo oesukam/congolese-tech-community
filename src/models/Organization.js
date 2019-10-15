@@ -2,6 +2,12 @@ import mongoose, { Schema } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate';
 
 const OrganizationSchema = new Schema({
+  logo: {
+    type: String,
+  },
+  image: {
+    type: String,
+  },
   name: {
     type: String,
     required: true,
@@ -10,6 +16,9 @@ const OrganizationSchema = new Schema({
     type: String,
   },
   description: {
+    type: String,
+  },
+  category: {
     type: String,
   },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
