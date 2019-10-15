@@ -22,10 +22,8 @@ export default class FeedController {
         .exec();
 
       feed = feed.map(post => {
-        const match = likes.find(
-          like =>
-            currentUser._id.equals(like.user) && post._id.equals(like.post),
-        );
+        const match = likes.find(like =>
+            currentUser._id.equals(like.user) && post._id.equals(like.post),);
         if (match) return { ...post.toObject(), liked: true };
         return post;
       });
@@ -46,10 +44,19 @@ export default class FeedController {
    * @memberof FeedController
    */
   static async getFeed(req, res) {
-    const { offset = 0, limit = 20 } = req.query;
+    const { offset = 0, limit = 20, search, category } = req.query;
     const { currentUser } = req;
-
-    let feed = await Post.find({ status: { $ne: 'deleted' } })
+    const where = { status: { $ne: 'deleted' } };
+    if (category) {
+      where.category = { $regex: `.*${category}.*` };
+    }
+    if (search) {
+      where.$or = [];
+      search.split(' ').forEach(val => {
+        where.$or.push({ description: { $regex: `.*${val}.*` } });
+      });
+    }
+    let feed = await Post.find()
       .select('-__v')
       .populate('author', '-_id -__v -password')
       .sort({ createdAt: -1 })
