@@ -43,7 +43,7 @@ module.exports = {
     password: 'CompanyName123',
   },
   organizationData: {
-    picture: 'picture',
+    image: 'picture',
     name: 'company name',
     registrationNumber: '111111',
     category: 'Software Development',
