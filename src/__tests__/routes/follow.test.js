@@ -10,7 +10,6 @@ let token;
 let tokenData;
 const username1 = 'admin';
 const username2 = 'user';
-const username3 = 'lungu';
 describe('Follow', () => {
   beforeAll(async () => {
     user1 = await User.findOne({ username: username1 });
@@ -68,36 +67,6 @@ describe('Follow', () => {
         .set('Authorization', token);
       expect(res.status).toBe(statusCodes.NOT_FOUND);
       expect(res.body.message).toBe('You are not a follower of this user');
-    });
-  });
-
-  describe('Follower and Following List ', () => {
-    test('Should return list of following', async () => {
-      const res = await request(app)
-        .get(`${urlPrefix}/follow/${username3}/following`)
-      expect(res.status).toBe(statusCodes.OK);  
-      expect(res.body.following).toBeDefined();
-    });
-
-    test('Should not return list of following since it is a wrong username', async () => {
-      const res = await request(app)
-        .get(`${urlPrefix}/follow/${username3}55/following`)
-      expect(res.status).toBe(statusCodes.NOT_FOUND);  
-      expect(res.body.message).toBe('User does not exist');
-    });
-
-    test('Should return list of follower', async () => {
-      const res = await request(app)
-        .get(`${urlPrefix}/follow/${username3}/follower`)
-      expect(res.status).toBe(statusCodes.OK);  
-      expect(res.body.follower).toBeDefined();
-    });
-
-    test('Should not return list of follower since it is a wrong username', async () => {
-      const res = await request(app)
-        .get(`${urlPrefix}/follow/${username3}55/follower`)
-      expect(res.status).toBe(statusCodes.NOT_FOUND);  
-      expect(res.body.message).toBe('User does not exist');
     });
   });
   afterAll(async () => {
