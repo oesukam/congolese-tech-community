@@ -4,7 +4,7 @@ const post = Joi.object().keys({
   name: Joi.string()
     .trim()
     .required(),
-  picture: Joi.string().trim(),
+  image: Joi.string().trim(),
   registrationNumber: Joi.string()
     .trim()
     .min(4)
@@ -17,6 +17,9 @@ const post = Joi.object().keys({
     .trim()
     .required(),
   province: Joi.string().trim(),
+  category: Joi.string()
+    .trim()
+    .required(),
   city: Joi.string().trim(),
   address: Joi.string().trim(),
   website: Joi.string().trim(),
@@ -38,6 +41,7 @@ const update = Joi.object().keys({
   email: Joi.string()
     .trim()
     .email(),
+  category: Joi.string().trim(),
   country: Joi.string().trim(),
   province: Joi.string().trim(),
   city: Joi.string().trim(),
