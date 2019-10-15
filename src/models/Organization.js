@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate';
 
-const OrganizationSchema = {
+const OrganizationSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -8,13 +9,19 @@ const OrganizationSchema = {
   registrationNumber: {
     type: String,
   },
-  employeesNumber: {
-    type: Number,
-  },
   description: {
     type: String,
   },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
+  admins: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  employees: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  employeesNumber: {
+    type: Number,
+  },
+  status: {
+    type: String,
+    default: 'active',
+  },
   createdAt: {
     type: Date,
     default: new Date(),
@@ -23,6 +30,8 @@ const OrganizationSchema = {
     type: Date,
     default: new Date(),
   },
-};
+});
+
+OrganizationSchema.plugin(mongoosePaginate);
 
 export default mongoose.model('Organization', OrganizationSchema);

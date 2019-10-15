@@ -2,15 +2,8 @@ import express from 'express';
 import { celebrate } from 'celebrate';
 import passport from '../../../config/passport';
 import AuthController from '../../../controllers/AuthController';
-import { PasswordController } from '../../../controllers';
 import { authValidator } from './validators';
-import {
-  asyncHandler,
-  checkUser,
-  verifyToken,
-  checkAuth,
-  checkEmailUser,
-} from '../../../middlewares';
+import { asyncHandler, checkUser, verifyToken } from '../../../middlewares';
 
 const router = express.Router();
 
@@ -61,18 +54,5 @@ router
 router
   .route('/verification/:token')
   .get(verifyToken, asyncHandler(AuthController.verification));
-
-router
-  .route('/password')
-  .post(
-    celebrate({ body: authValidator.email }),
-    checkEmailUser,
-    asyncHandler(PasswordController.reset),
-  )
-  .put(
-    checkAuth,
-    celebrate({ body: authValidator.password }),
-    asyncHandler(PasswordController.update),
-  );
 
 export default router;

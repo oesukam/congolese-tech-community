@@ -135,7 +135,7 @@ class AuthController {
       username,
       email,
       password: hashedPassword,
-      userType: 'organization'
+      userType: 'organization',
     });
     const organization = await Organization.create({
       name: companyName,
