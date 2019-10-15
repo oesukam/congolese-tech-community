@@ -2,7 +2,13 @@ import { Joi } from 'celebrate';
 
 const createPost = Joi.object().keys({
   image: Joi.string().trim(),
-  type: Joi.string().valid('general', 'job'),
+  type: Joi.string().valid(
+    'general',
+    'job',
+    'event',
+    'question',
+    'announcement',
+  ),
   title: Joi.string()
     .trim()
     .min(10),

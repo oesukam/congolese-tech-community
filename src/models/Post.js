@@ -51,10 +51,6 @@ const PostSchema = new Schema({
     default: new Date(),
   },
   likes: [{ type: Schema.Types.ObjectId, ref: 'Like' }],
-  category: {
-    type: String,
-    default: 'general',
-  },
   country: {
     type: String,
   },
