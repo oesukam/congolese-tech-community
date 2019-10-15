@@ -24,7 +24,7 @@ module.exports = {
     global: {
       functions: 80,
       lines: 80,
-      statements: -20,
+      statements: -30,
     },
   },
   transform: {
