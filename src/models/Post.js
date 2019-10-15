@@ -50,10 +50,10 @@ const PostSchema = new Schema({
     type: Date,
     default: new Date(),
   },
-  likes: [{ type: Schema.Types.ObjectId, ref: 'Like', }],
+  likes: [{ type: Schema.Types.ObjectId, ref: 'Like' }],
   category: {
-    type: Schema.Types.ObjectId,
-    ref: 'JobCategory',
+    type: String,
+    default: 'general',
   },
   country: {
     type: String,
@@ -68,7 +68,7 @@ const PostSchema = new Schema({
 
 PostSchema.pre('save', function cb(next) {
   if (!this.slug) {
-    this.slug = slugString(this.title);
+    this.slug = slugString(this.title || this.description);
   }
   next();
 });

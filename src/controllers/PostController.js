@@ -27,11 +27,11 @@ export default class PostController {
     });
 
     notifEvents.emit('create-index', {
-      title: post.title,
+      title: post.title || post.description,
       objectID: post.slug,
       resource: 'post',
       image: post.image,
-      keywords: `${post.tags.join(' ')}`,
+      keywords: `${post.tags.join(' ')} ${post.description}`,
     });
 
     return res.status(statusCodes.OK).json({
@@ -65,11 +65,11 @@ export default class PostController {
     await post.updateOne({ ...body });
 
     notifEvents.emit('update-index', {
-      title: body.title,
+      title: post.title || post.description,
       objectID: post.slug,
       resource: 'post',
-      image: body.image,
-      keywords: `${post.tags.join(' ')}`,
+      image: post.image,
+      keywords: `${post.tags.join(' ')} ${post.description}`,
     });
 
     return res.status(statusCodes.OK).json({
