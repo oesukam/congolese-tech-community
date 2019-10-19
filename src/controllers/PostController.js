@@ -28,7 +28,7 @@ export default class PostController {
 
     notifEvents.emit('create-index', {
       title: post.title || post.description,
-      publicId: post.slug,
+      objectID: post.slug,
       resource: 'post',
       category: post.type || 'general',
       image: post.image,
@@ -67,7 +67,7 @@ export default class PostController {
 
     notifEvents.emit('update-index', {
       title: post.title || post.description,
-      publicId: post.slug,
+      objectID: post.slug,
       resource: 'post',
       category: post.type,
       image: post.image,
