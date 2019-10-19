@@ -30,7 +30,7 @@ export default class PostController {
       title: post.title || post.description,
       objectID: post.slug,
       resource: 'post',
-      category: post.category || 'general',
+      category: post.type || 'general',
       image: post.image,
       keywords: `${post.tags.join(' ')} ${post.description}`,
     });
@@ -69,6 +69,7 @@ export default class PostController {
       title: post.title || post.description,
       objectID: post.slug,
       resource: 'post',
+      category: post.type,
       image: post.image,
       keywords: `${post.tags.join(' ')} ${post.description}`,
     });
