@@ -11,7 +11,7 @@ export const notifEvents = new EventEmitter();
 const registerEvents = () => {
   if (NODE_ENV !== 'test') {
     notifEvents.on('create-index', AlgoliaController.createIndex);
-    notifEvents.on('update-index', AlgoliaController.createIndex);
+    notifEvents.on('update-index', AlgoliaController.updateIndex);
     notifEvents.on('delete-index', AlgoliaController.deleteIndex);
 
     notifEvents.on(

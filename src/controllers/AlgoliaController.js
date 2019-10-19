@@ -10,7 +10,7 @@ export default class AlgoliaController {
    * @param {*} next
    * @returns {Object} Returns record's data
    */
-  static async createIndex(obj = { title: '', objectID: '', resource: '', keywords: '', image: '' },) {
+  static async createIndex(obj = { title: '', resource: '', keywords: '', image: '' },) {
     const index = pick(obj, identity);
     if (obj.objectID) {
       algoliasearch.addObjects([index]);
@@ -23,7 +23,7 @@ export default class AlgoliaController {
    * @param {*} next
    * @returns {Object} Returns record's data
    */
-  static async updateIndex(obj = { title: '', objectID: '', resource: '', keywords: '', image: '' },) {
+  static async updateIndex(obj = { title: '', resource: '', keywords: '', image: '' },) {
     const index = pick(obj, identity);
     if (obj.objectID) {
       algoliasearch.partialUpdateObject(index);
