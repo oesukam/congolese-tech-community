@@ -19,7 +19,10 @@ export default class PostCommentController {
     body.author = currentUser._id;
     body.post = post._id;
     const postComment = await PostComment.create(body);
-
+    const commentsCount = await PostComment.count({ post: post._id });
+    await post.updateOne({
+      commentsCount
+    });
     notifEvents.emit('post-commented', {
       currentUser: currentUser.toObject(),
       token: token.toObject(),

@@ -134,11 +134,13 @@ export default class PostController {
    * @returns {Object} Returns the response
    */
   static async getPosts(req, res) {
-    const posts = await Post.find({})
+    const posts = await Post.find({
+      status: 'active'
+    })
       .select('-__v')
       .populate(
         'author',
-        'picture username firstName lastName followerCount followedCount country city ',
+        'picture username firstName lastName followerCount followedCount country city',
       );
 
     return res.status(statusCodes.OK).json({
