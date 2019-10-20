@@ -46,9 +46,9 @@ export default class FeedController {
   static async getFeed(req, res) {
     const { offset = 0, limit = 20, search, category } = req.query;
     const { currentUser } = req;
-    const where = { status: { $ne: 'deleted' } };
+    const where = { status: 'active' };
     if (category) {
-      where.category = { $regex: `.*${category}.*` };
+      where.type = { $regex: `.*${category}.*` };
     }
     if (search) {
       where.$or = [];
@@ -56,9 +56,7 @@ export default class FeedController {
         where.$or.push({ description: { $regex: `.*${val}.*` } });
       });
     }
-    let feed = await Post.find({
-      status: 'active'
-    })
+    let feed = await Post.find(where)
       .select('-__v')
       .populate('author', 'picture username firstName lastName followerCount followedCount country city')
       .sort({ createdAt: -1 })
