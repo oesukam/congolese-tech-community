@@ -56,9 +56,11 @@ export default class FeedController {
         where.$or.push({ description: { $regex: `.*${val}.*` } });
       });
     }
-    let feed = await Post.find()
+    let feed = await Post.find({
+      status: 'active'
+    })
       .select('-__v')
-      .populate('author', '-_id -__v -password')
+      .populate('author', 'picture username firstName lastName followerCount followedCount country city')
       .sort({ createdAt: -1 })
       .skip(offset)
       .limit(limit);
@@ -86,7 +88,7 @@ export default class FeedController {
 
     let feed = await Post.find({
       userType: 'organization',
-      status: { $ne: 'deleted' },
+      status: 'active',
     })
       .select('-__v')
       .populate('author', '-_id -__v -password')

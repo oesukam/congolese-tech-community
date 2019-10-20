@@ -19,7 +19,11 @@ export default class PostCommentController {
     body.author = currentUser._id;
     body.post = post._id;
     const postComment = await PostComment.create(body);
-
+    const commentsCount = await PostComment.count({ post: post._id });
+    await post.updateOne({
+      commentsCount,
+      status: 'active'
+    });
     notifEvents.emit('post-commented', {
       currentUser: currentUser.toObject(),
       token: token.toObject(),
@@ -42,7 +46,7 @@ export default class PostCommentController {
    * @returns {Object} Returns the response
    */
   static async updatePostComment(req, res) {
-    const { currentUser, body, postComment } = req;
+    const { currentUser, body, post, postComment } = req;
 
     if (!currentUser._id.equals(postComment.author)) {
       return res.status(statusCodes.UNAUTHORIZED).json({
@@ -52,6 +56,12 @@ export default class PostCommentController {
     }
 
     await postComment.updateOne(body);
+
+    const commentsCount = await PostComment.count({ post: post._id });
+    await post.updateOne({
+      commentsCount,
+      status: 'active'
+    });
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
