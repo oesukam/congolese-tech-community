@@ -1,4 +1,4 @@
-import { Post, Share } from '../models';
+import { Post, Share, Like } from '../models';
 import { statusCodes, responseMessages } from '../constants';
 import { notifEvents } from '../middlewares/registerEvents';
 /**
@@ -118,11 +118,11 @@ export default class PostController {
    * @returns {Object} Returns the response
    */
   static async getPost(req, res) {
-    const { post } = req;
-
+    const { post, currentUser } = req;
+    const likedPost = await PostController.checkLikes(currentUser, post)
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
-      post,
+      post: likedPost,
     });
   }
 
@@ -173,5 +173,25 @@ export default class PostController {
       message: responseMessages.updated('Post'),
       share,
     });
+  }
+
+   /**
+   * Checks the user
+   *
+   * @static
+   * @author Karl Musingo
+   * @param {*} currentUser
+   * @param {*} post
+   * @returns {object} feed
+   */
+  static async checkLikes(currentUser, post) {
+    if (currentUser) {
+      const likes = await Like.find({ user: currentUser._id, post:  post._id })
+        .lean()
+        .exec();
+      if (likes) return { ...post.toObject(), liked: true };
+      return post;
+    }
+    return post;
   }
 }
