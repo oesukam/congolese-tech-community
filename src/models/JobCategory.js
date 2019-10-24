@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import slugString from '../helpers/slugString';
+import defaultDateTime from '../helpers/defaultDateTime';
 
 const JobCategorySchema = Schema({
   name: {
@@ -15,11 +16,11 @@ const JobCategorySchema = Schema({
   },
   createdAt: {
     type: Date,
-    default: new Date(),
+    default: defaultDateTime(),
   },
   updatedAt: {
     type: Date,
-    default: new Date(),
+    default: defaultDateTime(),
   },
 });
 

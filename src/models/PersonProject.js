@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import defaultDateTime from '../helpers/defaultDateTime';
 
 const personProjectSchema = new Schema({
   openSource: {
@@ -29,11 +30,11 @@ const personProjectSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User' },
   createdAt: {
     type: Date,
-    default: new Date(),
+    default: defaultDateTime(),
   },
   updatedAt: {
     type: Date,
-    default: new Date(),
+    default: defaultDateTime(),
   },
 });
 

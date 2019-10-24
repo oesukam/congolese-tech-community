@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate';
+import defaultDateTime from '../helpers/defaultDateTime';
 
 const userNotification = new Schema({
   user: {
@@ -22,11 +23,11 @@ const userNotification = new Schema({
   },
   createdAt: {
     type: Date,
-    default: new Date(),
+    default: defaultDateTime(),
   },
   updatedAt: {
     type: Date,
-    default: new Date(),
+    default: defaultDateTime(),
   },
 });
 

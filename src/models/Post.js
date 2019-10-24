@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import slugString from '../helpers/slugString';
+import defaultDateTime from '../helpers/defaultDateTime';
 
 const PostSchema = new Schema({
   slug: {
@@ -44,11 +45,11 @@ const PostSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: new Date(),
+    default: defaultDateTime(),
   },
   updatedAt: {
     type: Date,
-    default: new Date(),
+    default: defaultDateTime(),
   },
   likes: [{ type: Schema.Types.ObjectId, ref: 'Like', }],
   category: {

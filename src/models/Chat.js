@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import defaultDateTime from '../helpers/defaultDateTime';
 
 const chatSchema = new Schema({
   body: {
@@ -15,7 +16,7 @@ const chatSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: new Date(),
+    default: defaultDateTime(),
   }
 });
 
