@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import defaultDateTime from '../helpers/defaultDateTime';
 
 const ShareSchema = new Schema({
   plateforme: {
@@ -18,11 +19,11 @@ const ShareSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: new Date(),
+    default: defaultDateTime(),
   },
   updatedAt: {
     type: Date,
-    default: new Date(),
+    default: defaultDateTime(),
   },
 });
 

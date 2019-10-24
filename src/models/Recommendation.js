@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import defaultDateTime from '../helpers/defaultDateTime';
 
 const RecommendationSchema = new Schema({
     from: {
@@ -17,7 +18,7 @@ const RecommendationSchema = new Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now,
+        default: defaultDateTime(),
     },
     updatedAt: {
         type: Date,

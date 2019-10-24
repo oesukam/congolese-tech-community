@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import defaultDateTime from '../helpers/defaultDateTime';
 
 const TokenSchema = new Schema({
   user: {
@@ -17,14 +18,14 @@ const TokenSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: new Date(),
+    default: defaultDateTime(),
   },
   notificationToken: {
     type: String,
   },
   updatedAt: {
     type: Date,
-    default: new Date(),
+    default: defaultDateTime(),
   },
 });
 
