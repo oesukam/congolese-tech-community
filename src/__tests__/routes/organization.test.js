@@ -2,13 +2,15 @@ import mongoose from 'mongoose';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { User, Organization } from '../../models';
-import { organization } from '../../__mocks__/dummyData';
+import { organization, organizationData } from '../../__mocks__/dummyData';
 import { urlPrefix } from '../../__mocks__/variables';
 import app from '../../app';
 
 describe('Organization auth', () => {
   let userId;
   let tokenLog;
+  let bearerToken;
+  let organizationId;
   describe('Signup with email', () => {
     test('should sign up the user', async () => {
       const resp = await request(app)
@@ -16,6 +18,7 @@ describe('Organization auth', () => {
         .send(organization);
       userId = resp.body.user._id;
       tokenLog = resp.body.token;
+      bearerToken = `Bearer ${resp.body.token}`;
       expect(resp.status).toBe(201);
       expect(resp.body).toHaveProperty('token');
     });
@@ -47,17 +50,17 @@ describe('Organization auth', () => {
         .post(`${urlPrefix}/auth/login`)
         .send({ username, password });
       expect(resp.status).toBe(403);
-      expect(resp.body.message).toBe('Check your email for account verification');
+      expect(resp.body.message).toBe('Check your email for account verification',);
     });
 
     test('should verify the account', async () => {
-      const resp = await request(app).get(`${urlPrefix}/auth/verification/${tokenLog}`);
+      const resp = await request(app).get(`${urlPrefix}/auth/verification/${tokenLog}`,);
       expect(resp.status).toBe(200);
-      expect(resp.body.message).toBe('Your account has been verified successfully');
+      expect(resp.body.message).toBe('Your account has been verified successfully',);
     });
 
     test('should not verify the account when it is already verified', async () => {
-      const resp = await request(app).get(`${urlPrefix}/auth/verification/${tokenLog}`);
+      const resp = await request(app).get(`${urlPrefix}/auth/verification/${tokenLog}`,);
       expect(resp.status).toBe(400);
       expect(resp.body.message).toBe('Your account has already been verified');
     });
@@ -66,59 +69,61 @@ describe('Organization auth', () => {
       const expiredToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
         expiresIn: '0.1s',
       });
-      const resp = await request(app).get(`${urlPrefix}/auth/verification/${expiredToken}`);
+      const resp = await request(app).get(`${urlPrefix}/auth/verification/${expiredToken}`,);
       expect(resp.status).toBe(401);
-      expect(resp.body.message).toBe('Your verification email has expired, try to login to receive a new one');
-    });
-  });
-
-  describe('login with username or email verification', () => {
-    test('should log the user in', async () => {
-      const resp = await request(app)
-        .post(`${urlPrefix}/auth/login`)
-        .send({ username: 'company_name', password: 'CompanyName123' });
-      expect(resp.status).toBe(200);
-      expect(resp.body).toHaveProperty('token');
-    });
-
-    test('should not log the user in with wrong credentials', async () => {
-      const resp = await request(app)
-        .post(`${urlPrefix}/auth/login`)
-        .send({ username: 'company', password: 'CompanyN1233' });
-      expect(resp.status).toBe(401);
-      expect(resp.body.message).toBe('The credentials you provided are incorrect');
+      expect(resp.body.message).toBe('Your verification email has expired, try to login to receive a new one',);
     });
   });
 
   describe('organizations model', () => {
     it('gets all available organizations', async () => {
-      const resp = await request(app)
-        .get(`${urlPrefix}/organizations`);
+      const resp = await request(app).get(`${urlPrefix}/organizations`);
       expect(resp.status).toBe(200);
-      expect(resp.body.organizations[0].name).toBe('company name');
-    });
-
-    it('gets a single organization', async () => {
-      const resp = await request(app)
-        .get(`${urlPrefix}/organizations/${userId}`);
-      expect(resp.status).toBe(200);
-      expect(resp.body.organization.name).toBe('company name');
+      expect(resp.body.organizations).toBeDefined();
     });
 
     it('Returns a message when an organization is not found', async () => {
-      const resp = await request(app)
-        .get(`${urlPrefix}/organizations/9cef8a70a12d893fd282dfb8`);
+      const resp = await request(app).get(`${urlPrefix}/organizations/9cef8a70a12d893fd282dfb8`,);
       expect(resp.status).toBe(404);
       expect(resp.body.message).toBe('Organization does not exist');
     });
 
     it('Returns a message when an organization Id format is invalid', async () => {
-      const resp = await request(app)
-        .get(`${urlPrefix}/organizations/wrongFormatOrganizationID`);
+      const resp = await request(app).get(`${urlPrefix}/organizations/wrongFormatOrganizationID`,);
       expect(resp.status).toBe(400);
       expect(resp.body.message).toBe('Wrong Id format');
     });
-  })
+  });
+
+  describe('organizations routes', () => {
+    it('should create a new orgnaization', async () => {
+      const resp = await request(app)
+        .post(`${urlPrefix}/organizations`)
+        .set('Authorization', bearerToken)
+        .send(organizationData);
+      organizationId = resp.body.organization._id;
+      expect(resp.status).toBe(201);
+      expect(resp.body.organization.name).toBe('company name');
+    });
+
+    it('should return `Organization already exists`', async () => {
+      const resp = await request(app)
+        .post(`${urlPrefix}/organizations`)
+        .set('Authorization', bearerToken)
+        .send(organizationData);
+      expect(resp.status).toBe(409);
+      expect(resp.body.message).toBe('Organization already exists');
+    });
+
+    it('should update the organization a new orgnaization', async () => {
+      const resp = await request(app)
+        .put(`${urlPrefix}/organizations/${organizationId}`)
+        .set('Authorization', bearerToken)
+        .send({ name: 'company name 2' });
+      expect(resp.status).toBe(200);
+      expect(resp.body.organization.name).toBe('company name 2');
+    });
+  });
 
   afterAll(async () => {
     await User.deleteOne({ email: organization.email });

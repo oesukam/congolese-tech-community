@@ -51,7 +51,6 @@ class AuthController {
 
     let person = await Person.findOne({ providerId: id });
     let user = await User.findOne({ email });
-    let status = OK;
 
     if (person == null && user == null) {
       user = await User.create({
@@ -68,7 +67,6 @@ class AuthController {
         lastName: familyName,
         user: user.id,
       });
-      status = CREATED;
     }
 
     person = person || (await Person.findOne({ user: user.id }));
@@ -84,10 +82,7 @@ class AuthController {
       keywords: `${name.givenName} ${name.familyName}`,
     });
 
-    return res.status(status).json({
-      user,
-      token,
-    });
+    res.redirect(`${process.env.FRONTEND_URL}?token=${token}&user=${JSON.stringify(user)}`);
   }
 
   /**
@@ -140,7 +135,7 @@ class AuthController {
       username,
       email,
       password: hashedPassword,
-      userType: 'organization'
+      userType: 'organization',
     });
     const organization = await Organization.create({
       name: companyName,

@@ -27,11 +27,12 @@ export default class PostController {
     });
 
     notifEvents.emit('create-index', {
-      title: post.title,
+      title: post.title || post.description,
       objectID: post.slug,
       resource: 'post',
+      category: post.type || 'general',
       image: post.image,
-      keywords: `${post.tags.join(' ')}`,
+      keywords: `${post.tags.join(' ')} ${post.description}`,
     });
 
     return res.status(statusCodes.OK).json({
@@ -65,11 +66,12 @@ export default class PostController {
     await post.updateOne({ ...body });
 
     notifEvents.emit('update-index', {
-      title: body.title,
+      title: post.title || post.description,
       objectID: post.slug,
       resource: 'post',
-      image: body.image,
-      keywords: `${post.tags.join(' ')}`,
+      category: post.type,
+      image: post.image,
+      keywords: `${post.tags.join(' ')} ${post.description}`,
     });
 
     return res.status(statusCodes.OK).json({
@@ -132,9 +134,14 @@ export default class PostController {
    * @returns {Object} Returns the response
    */
   static async getPosts(req, res) {
-    const posts = await Post.find({})
+    const posts = await Post.find({
+      status: 'active'
+    })
       .select('-__v')
-      .populate('author', '-_id -__v -userType -password');
+      .populate(
+        'author',
+        'picture username firstName lastName followerCount followedCount country city',
+      );
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,

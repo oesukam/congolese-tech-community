@@ -3,7 +3,6 @@ import * as statusCodes from '../constants/statusCodes';
 import { alreadyExist } from '../constants/responseMessages';
 
 const checkUser = async (req, res, next) => {
-  
   const { email, username } = req.body;
 
   const ret = field =>
@@ -18,8 +17,12 @@ const checkUser = async (req, res, next) => {
     email,
   });
 
-  if (existUsername) return ret('Username');
-  if (existEmail) return ret('Email');
+  if (existUsername) {
+    return ret('Username');
+  }
+  if (existEmail) {
+    return ret('Email');
+  }
 
   next();
 };
