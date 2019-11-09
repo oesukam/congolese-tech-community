@@ -12,6 +12,7 @@ import {
   checkPost,
   checkPostComment,
   checkPostAndJob,
+  optionalCheckAuth
 } from '../../../middlewares';
 
 const router = express.Router();
@@ -28,7 +29,7 @@ router
 router
   .route('/:postSlug')
   .all(checkPost)
-  .get(asyncHandler(PostController.getPost))
+  .get(optionalCheckAuth, asyncHandler(PostController.getPost))
   .put(
     checkAuth,
     celebrate({ body: postValidator.updatePost }),

@@ -140,10 +140,15 @@ describe('posts', () => {
   describe('retreive a post', () => {
     beforeAll(async () => {
       const res = await request(app)
-        .post(`${urlPrefix}/posts`)
+        .post(`${urlPrefix}/posts`) 
         .set('Authorization', token)
         .send(postData);
+
       postSlug = res.body.post.slug;
+      
+      await request(app)
+        .post(`${urlPrefix}/posts/${postSlug}/like`)
+        .set('Authorization', token)
     });
 
     test('should return `Post does not exist`', async () => {
@@ -156,6 +161,14 @@ describe('posts', () => {
       const res = await request(app).get(`${urlPrefix}/posts/${postSlug}`);
       expect(res.status).toBe(statusCodes.OK);
       expect(res.body.post).toHaveProperty('title');
+    });
+
+    test('should  return `a post` with liked to true', async () => {
+      const res = await request(app)
+        .get(`${urlPrefix}/posts/${postSlug}`)
+        .set('Authorization', token);
+      expect(res.status).toBe(statusCodes.OK);
+      expect(res.body.post).toHaveProperty('liked');
     });
   });
 
