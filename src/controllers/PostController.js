@@ -189,7 +189,7 @@ export default class PostController {
       const likes = await Like.find({ user: currentUser._id, post:  post._id })
         .lean()
         .exec();
-      if (likes) return { ...post.toObject(), liked: true };
+      if (likes.length !== 0) return { ...post.toObject(), liked: true };
       return post;
     }
     return post;
