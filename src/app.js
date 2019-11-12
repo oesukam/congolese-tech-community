@@ -8,16 +8,27 @@ import swaggerUI from 'swagger-ui-express';
 import YAML from 'yamljs';
 import passport from 'passport';
 import webPush from 'web-push';
+import * as Sentry from '@sentry/node';
 import joiErrors from './middlewares/joiErrors';
 import logger from './helpers/logger';
 import { connectDb } from './models';
 import routes from './routes';
 import registerEvents from './middlewares/registerEvents';
 
-const isProd = process.env.NODE_ENV === 'production';
+const {
+  NODE_ENV,
+  SENTRY_DSN,
+  PUSH_PUBLIC_VAPID_KEY,
+  PUSH_PRIVATE_VAPID_KEY,
+} = process.env;
+
+const isProd = NODE_ENV === 'production';
 const app = express();
+
+Sentry.init({ dsn: SENTRY_DSN });
+app.use(Sentry.Handlers.requestHandler());
+
 const swaggerYAMLDocs = YAML.load('./docs/swagger.yml');
-const { PUSH_PUBLIC_VAPID_KEY, PUSH_PRIVATE_VAPID_KEY } = process.env;
 
 webPush.setVapidDetails(
   'mailto:example@yourdomain.org',
@@ -42,6 +53,7 @@ app.use(morgan(isProd ? 'combined' : 'dev'));
 app.use(routes);
 app.use(joiErrors());
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerYAMLDocs));
+app.use(Sentry.Handlers.errorHandler());
 
 const server = http.Server(app);
 const io = socket(server, { log: true });
