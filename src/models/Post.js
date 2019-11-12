@@ -35,6 +35,10 @@ const PostSchema = new Schema({
     type: Number,
     default: 0,
   },
+  commentsCount: {
+    type: Number,
+    default: 0,
+  },
   tags: {
     type: [String],
     default: [],
@@ -51,11 +55,7 @@ const PostSchema = new Schema({
     type: Date,
     default: defaultDateTime(),
   },
-  likes: [{ type: Schema.Types.ObjectId, ref: 'Like', }],
-  category: {
-    type: Schema.Types.ObjectId,
-    ref: 'JobCategory',
-  },
+  likes: [{ type: Schema.Types.ObjectId, ref: 'Like' }],
   country: {
     type: String,
   },
@@ -69,7 +69,7 @@ const PostSchema = new Schema({
 
 PostSchema.pre('save', function cb(next) {
   if (!this.slug) {
-    this.slug = slugString(this.title);
+    this.slug = slugString(this.title || this.description);
   }
   next();
 });

@@ -5,16 +5,15 @@ import { statusCodes, responseMessages } from '../constants';
  * @description Like Controller class
  */
 export default class LikesController {
-
-	/**
-	 * Likes a post
-	 *
-	 * @static
-	 * @param {*} req
-	 * @param {*} res
-	 * @returns {void} post
-	 * @memberof LikesController
-	 */
+  /**
+   * Likes a post
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {void} post
+   * @memberof LikesController
+   */
   static async likePost(req, res) {
     const { currentUser, post } = req;
 
@@ -31,22 +30,23 @@ export default class LikesController {
       post: post.id,
     });
 
+    await post.updateOne({likesCount: post.likesCount + 1});
+
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
-      message: 'Post successfully liked'
+      message: 'Post successfully liked',
     });
-
   }
 
   /**
-	 * Unlikes a post
-	 *
-	 * @static
-	 * @param {*} req
-	 * @param {*} res
-	 * @returns {void} post
-	 * @memberof LikesController
-	 */
+   * Unlikes a post
+   *
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns {void} post
+   * @memberof LikesController
+   */
   static async unlikePost(req, res) {
     const { currentUser, post } = req;
 
@@ -59,11 +59,12 @@ export default class LikesController {
     }
 
     await Like.deleteOne({ _id: liked._id });
+   
+    if(post.likesCount > 0) await post.updateOne({likesCount: post.likesCount - 1});
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
-      message: 'Post successfully unliked'
+      message: 'Post successfully unliked',
     });
-
   }
 }
