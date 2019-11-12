@@ -1,6 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate';
-import defaultDateTime from '../helpers/defaultDateTime';
 
 const UserSchema = new Schema({
   username: {
@@ -72,11 +71,11 @@ const UserSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: defaultDateTime(),
+    default: new Date(),
   },
   updatedAt: {
     type: Date,
-    default: defaultDateTime(),
+    default: new Date(),
   },
   recommendations: [{ type: Schema.Types.ObjectId, ref: 'Recommendation' }],
 });

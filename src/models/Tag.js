@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose';
-import defaultDateTime from '../helpers/defaultDateTime';
 
 const TagSchema = new Schema({
   type: {
@@ -18,11 +17,11 @@ const TagSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: defaultDateTime(),
+    default: new Date(),
   },
   updatedAt: {
     type: Date,
-    default: defaultDateTime(),
+    default: new Date(),
   },
 });
 

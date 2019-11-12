@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import defaultDateTime from '../helpers/defaultDateTime';
+import moment from 'moment';
 
 const personEducationSchema = new Schema({
   from: {
@@ -22,11 +22,11 @@ const personEducationSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: 'User' },
   createdAt: {
     type: Date,
-    default: defaultDateTime(),
+    default: new Date(),
   },
   updatedAt: {
     type: Date,
-    default: defaultDateTime(),
+    default: new Date(),
   },
 });
 
