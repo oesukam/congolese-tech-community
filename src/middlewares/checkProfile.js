@@ -1,4 +1,4 @@
-import { User } from '../models';
+import { User, Follow } from '../models';
 import * as statusCodes from '../constants/statusCodes';
 import { notExist } from '../constants/responseMessages';
 
@@ -19,7 +19,11 @@ const checkProfile = async (req, res, next) => {
     });
   }
 
-  req.profile = foundProfile;
+  req.profile = {
+    ...foundProfile['_doc'],
+    followers: await Follow.find({ followed: foundProfile['_doc']['_id'] }),
+    following: await Follow.find({ following: foundProfile['_doc']['_id'] }),
+  };
 
   next();
 };
