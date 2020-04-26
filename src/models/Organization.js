@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import defaultDateTime from '../helpers/defaultDateTime';
 import mongoosePaginate from 'mongoose-paginate';
 
 const OrganizationSchema = new Schema({
