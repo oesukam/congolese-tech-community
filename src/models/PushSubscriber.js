@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose';
-import defaultDateTime from '../helpers/defaultDateTime';
 
 const pushSubscriberSchema = new Schema({
   user: {
@@ -15,7 +14,7 @@ const pushSubscriberSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: defaultDateTime(),
+    default: new Date(),
   },
 });
 

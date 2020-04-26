@@ -49,7 +49,7 @@ const PostSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: defaultDateTime(),
+    default: new Date(),
   },
   updatedAt: {
     type: Date,

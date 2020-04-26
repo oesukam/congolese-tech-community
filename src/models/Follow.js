@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose';
-import defaultDateTime from '../helpers/defaultDateTime';
 
 const followSchema = new Schema({
   followed: {
@@ -14,7 +13,7 @@ const followSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: defaultDateTime(),
+    default: new Date(),
   },
 });
 

@@ -81,6 +81,7 @@ export default class ProfileController {
         populate: 'info',
         limit: PAGE_LIMIT,
         offset: page - 1,
+        sort: { createdAt: -1 },
       },
     );
 

@@ -2,7 +2,6 @@ import mongoose, { Schema } from 'mongoose';
 import defaultDateTime from '../helpers/defaultDateTime';
 import mongoosePaginate from 'mongoose-paginate';
 
-
 const OrganizationSchema = new Schema({
   logo: {
     type: String,
@@ -35,11 +34,11 @@ const OrganizationSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: defaultDateTime(),
+    default: new Date(),
   },
   updatedAt: {
     type: Date,
-    default: defaultDateTime(),
+    default: new Date(),
   },
 });
 
