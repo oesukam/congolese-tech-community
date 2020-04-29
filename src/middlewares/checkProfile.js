@@ -20,9 +20,9 @@ const checkProfile = async (req, res, next) => {
   }
 
   req.profile = {
-    ...foundProfile['_doc'],
-    followers: await Follow.find({ followed: foundProfile['_doc']['_id'] }),
-    following: await Follow.find({ following: foundProfile['_doc']['_id'] }),
+    ...foundProfile._doc,
+    followers: await Follow.find({ followed: foundProfile._doc._id }),
+    following: await Follow.find({ follower: foundProfile._doc._id }),
   };
 
   next();
