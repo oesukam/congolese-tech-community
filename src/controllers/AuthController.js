@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import User from '../models/User';
+import Follow from '../models/Follow';
 import Person from '../models/Person';
 import { encrypt, sendMail } from '../helpers';
 import Organization from '../models/Organization';
@@ -81,6 +82,9 @@ class AuthController {
       image: picture,
       keywords: `${name.givenName} ${name.familyName}`,
     });
+
+    user.user.followers = await Follow.find({ followed: user._id });
+    user.user.following = await Follow.find({ follower: user._id });
 
     res.redirect(`${process.env.FRONTEND_URL}?token=${token}&user=${JSON.stringify(user)}`);
   }
