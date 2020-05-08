@@ -23,12 +23,16 @@ export default class ProfileController {
       });
     }
 
-    const person = await Person.updateOne({ user: currentUser._id }, body, {
-      upsert: true,
-    });
+    let person = await Person.findOne({ user: currentUser._id });
+
+    if (!person) {
+      person =  Person.create({ ...body,  user: currentUser._id });
+    } else {
+      person.updateOne({ ...body });
+    }
 
     if (!currentUser.info) {
-      await currentUser.updateOne({ info: person.upserted[0]._id });
+      await currentUser.updateOne({ info: person._id });
     }
 
     notifEvents.emit('update-index', {

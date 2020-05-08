@@ -3,7 +3,6 @@ import mongoose, { Schema } from 'mongoose';
 const personSchema = new Schema({
   providerId: {
     type: String,
-    required: true,
   },
   firstName: {
     type: String,
