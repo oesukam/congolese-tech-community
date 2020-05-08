@@ -40,7 +40,7 @@ describe('profiles', () => {
       const res = await request(app)
         .put(`${urlPrefix}/profiles/${username}`)
         .set('Authorization', token)
-        .send(profileData);
+        .send({ person: profileData });
       expect(res.status).toBe(statusCodes.OK);
       expect(res.body.profile).toHaveProperty('username');
     });

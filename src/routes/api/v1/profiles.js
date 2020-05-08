@@ -18,4 +18,12 @@ router
     asyncHandler(ProfileController.updateProfile),
   );
 
+router
+  .route('/:username/followers')
+  .all(asyncHandler(checkAuth))
+  .get(
+    celebrate({ query: profileValidator.getFollowersQueryParms }),
+    asyncHandler(ProfileController.getAllFollowers)
+    );
+
 export default router;

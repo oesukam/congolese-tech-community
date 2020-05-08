@@ -16,20 +16,28 @@ const updateUser = Joi.object().keys({
 });
 
 const updateProfile = Joi.object().keys({
-  firstName: Joi.string(),
-  middleName: Joi.string(),
-  lastName: Joi.string(),
-  gender: Joi.string().valid('male', 'female'),
-  nationality: Joi.string(),
-  languages: Joi.array().items(Joi.string()),
-  skills: Joi.array().items(Joi.string()),
-  bio: Joi.string()
-    .trim()
-    .min(20),
-  profession: Joi.string().max(50).min(2), 
+  person: Joi.object().keys({
+    firstName: Joi.string(),
+    middleName: Joi.string(),
+    lastName: Joi.string(),
+    gender: Joi.string().valid('male', 'female'),
+    nationality: Joi.string(),
+    languages: Joi.array().items(Joi.string()),
+    skills: Joi.array().items(Joi.string()),
+    bio: Joi.string()
+      .trim()
+      .min(20),
+    profession: Joi.string().max(50).min(2),
+  }),
+  user: updateUser
+});
+
+const getFollowersQueryParms = Joi.object().keys({
+  page: Joi.number().min(1).optional()
 });
 
 export default {
   updateProfile,
   updateUser,
+  getFollowersQueryParms
 };

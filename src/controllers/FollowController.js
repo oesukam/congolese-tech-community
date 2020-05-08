@@ -83,4 +83,20 @@ export default class FollowController {
       message: responseMessages.deleted('Follow'),
     });
   }
+
+    /**
+   * @author nkpremices
+   * @param {*} req 
+   * @param {*} res 
+   * @returns {object} - the json response
+   */
+  static async verify(req, res) {
+    const { currentUser, params: { username } } = req
+
+    const followedUser = await User.findOne({ username });
+
+    const followData = await Follow.findOne({ follower: currentUser._id, followed: followedUser._id })
+
+    res.status(followData ? statusCodes.OK : statusCodes.NOT_FOUND).json({ followData });
+  }
 }

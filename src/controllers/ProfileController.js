@@ -2,6 +2,7 @@ import { User, Person } from '../models';
 import { statusCodes, responseMessages } from '../constants';
 import { PAGE_LIMIT } from '../constants/shared';
 import { notifEvents } from '../middlewares/registerEvents';
+import { profileService } from '../services/profileService';
 /**
  * @description Profile Controller class
  */
@@ -26,14 +27,16 @@ export default class ProfileController {
     let person = await Person.findOne({ user: currentUser._id });
 
     if (!person) {
-      person =  Person.create({ ...body,  user: currentUser._id });
+      person =  await Person.create({ ...body,  user: currentUser._id });
     } else {
-      person.updateOne({ ...body });
+      await person.updateOne({ ...body.person });
     }
 
     if (!currentUser.info) {
       await currentUser.updateOne({ info: person._id });
     }
+
+    await currentUser.updateOne({ ...body.user });
 
     notifEvents.emit('update-index', {
       title: `${person.firstName} ${person.middleName} ${person.lastName}`
@@ -46,7 +49,7 @@ export default class ProfileController {
 
     return res.status(statusCodes.OK).json({
       status: statusCodes.OK,
-      profile,
+      profile: await profileService.getCompleteProfile(currentUser.username),
       message: responseMessages.created('Profile'),
     });
   }
@@ -98,5 +101,24 @@ export default class ProfileController {
       limit: undefined,
       page,
     });
+  }
+
+    /**
+   * @author nkpremices
+   * @param {*} req 
+   * @param {*} res 
+   * @returns {object} - the json response
+   */
+  static async getAllFollowers(req, res) {
+    const { params: { username }, query: { page = 1 } } = req;
+
+    const owner = await User.findOne({ "username": username });
+
+    const followers = await profileService.getFollowersFollowing(owner._id, 'follower', 'followed', page);
+    const following = await profileService.getFollowersFollowing(owner._id, 'followed', 'follower', page);
+
+    res.status(statusCodes.OK).json({
+      following, followers,
+    })
   }
 }
