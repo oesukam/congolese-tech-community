@@ -52,6 +52,24 @@ describe('Follow', () => {
     });
   });
 
+  describe('getFollowers && verify', () => {
+    it('returns a success', async () => {
+      const res = await request(app)
+        .get(`${urlPrefix}/profiles/${username1}/followers`)
+        .set('Authorization', token);
+
+      expect(res.body.following.length).toEqual(1);
+    })
+
+    it('verifies', async () => {
+      const res = await request(app)
+        .get(`${urlPrefix}/follow/${username2}/verify`)
+        .set('Authorization', token);
+
+      expect(res.body.followData).toHaveProperty('follower');
+    })
+  })
+
   describe('unFollow users ', () => {
     test('Should unfollow the user', async () => {
       const res = await request(app)
@@ -69,6 +87,7 @@ describe('Follow', () => {
       expect(res.body.message).toBe('You are not a follower of this user');
     });
   });
+
   afterAll(async () => {
     await Follow.deleteMany({});
     await app.close();

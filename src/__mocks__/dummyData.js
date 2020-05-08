@@ -1,18 +1,20 @@
+const personData = {
+  id: '2673546576879',
+  emails: [{ value: 'grace.lungu.me@gmail.com' }],
+  photos: [{ value: 'https://image.jpg' }],
+  displayName: 'grace',
+  name: {
+    givenName: 'grace',
+    familyName: 'lungu',
+  },
+};
+
 module.exports = {
+  personData,
   postData: {
     title: 'Lorem title',
     description:
       "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
-  },
-  personData: {
-    id: '2673546576879',
-    emails: [{ value: 'grace.lungu.me@gmail.com' }],
-    photos: [{ value: 'https://image.jpg' }],
-    displayName: 'grace',
-    name: {
-      givenName: 'grace',
-      familyName: 'lungu',
-    },
   },
   jobData: {
     title: 'Lorem title',
@@ -94,4 +96,17 @@ module.exports = {
     link: 'https://localhost:3000/posts/postId',
     content: 'notificatioToken',
   },
+  userModel: {
+    findOne: () => ({
+      select: () => ({
+        populate: () => (personData)
+      })
+    })
+  },
+  followModel: {
+    aggregate: jest.fn().mockResolvedValue({
+      followers: [personData],
+      following: [personData]
+    }),
+  }
 };

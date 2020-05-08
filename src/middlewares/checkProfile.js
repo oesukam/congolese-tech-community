@@ -1,16 +1,11 @@
-import { User, Follow } from '../models';
+import { profileService } from '../services/profileService';
 import * as statusCodes from '../constants/statusCodes';
 import { notExist } from '../constants/responseMessages';
 
 const checkProfile = async (req, res, next) => {
   const { username } = req.params;
 
-  const foundProfile = await User.findOne({
-    username,
-    status: { $ne: 'deleted' },
-  })
-    .select(['-status', '-createdAt', '-updatedAt', '-password'])
-    .populate('info', '-__v');
+  const foundProfile = await profileService.getCompleteProfile(username);
 
   if (!foundProfile) {
     return res.status(statusCodes.NOT_FOUND).json({
@@ -20,9 +15,7 @@ const checkProfile = async (req, res, next) => {
   }
 
   req.profile = {
-    ...foundProfile._doc,
-    followers: await Follow.find({ followed: foundProfile._doc._id }),
-    following: await Follow.find({ follower: foundProfile._doc._id }),
+    ...foundProfile._doc
   };
 
   next();
