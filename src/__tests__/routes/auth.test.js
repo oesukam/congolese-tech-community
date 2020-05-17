@@ -6,7 +6,7 @@ import { personData as user } from '../../__mocks__/dummyData';
 import app from '../../app';
 
 const res = {
-  redirect() { }
+  redirect() {},
 };
 
 describe('Social login', () => {
@@ -16,7 +16,7 @@ describe('Social login', () => {
   });
 
   it('Should mock the social login controller', async () => {
-    await AuthController.socialAuth({ user }, res);
+    await AuthController.socialAuth({ user, query: {} }, res);
     expect(res.redirect).toHaveBeenCalled();
   });
 
@@ -28,6 +28,7 @@ describe('Social login', () => {
           name: { givenName: null, familyName: null },
           emails: null,
         },
+        query: {},
       },
       res,
     );

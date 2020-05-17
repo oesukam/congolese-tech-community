@@ -1,15 +1,25 @@
 import express from 'express';
 import { celebrate } from 'celebrate';
+import dotenv from 'dotenv';
 import passport from '../../../config/passport';
 import AuthController from '../../../controllers/AuthController';
 import { authValidator } from './validators';
 import { asyncHandler, checkUser, verifyToken } from '../../../middlewares';
 
+dotenv.config();
 const router = express.Router();
 
-router
-  .route('/google')
-  .get(passport.authenticate('google', { scope: ['email', 'profile'] }));
+const getCallbackURL = (plaform, fallbackUrl) =>
+  `${process.env.DOMAIN}/api/v1/auth/${plaform}/redirect?fallback=${
+    fallbackUrl || ''
+  }`;
+
+router.route('/google').get((req, res, next) => {
+  passport.authenticate('google', {
+    scope: ['email', 'profile'],
+    callbackURL: getCallbackURL('google', req.query.url),
+  })(req, res, next);
+});
 
 router
   .route('/google/redirect')
@@ -18,7 +28,11 @@ router
     asyncHandler(AuthController.socialAuth),
   );
 
-router.route('/facebook').get(passport.authenticate('facebook'));
+router.route('/facebook').get((req, res, next) => {
+  passport.authenticate('facebook', {
+    callbackURL: getCallbackURL('facebook', req.query.url),
+  })(req, res, next);
+});
 
 router
   .route('/facebook/redirect')
@@ -27,7 +41,11 @@ router
     asyncHandler(AuthController.socialAuth),
   );
 
-router.route('/github').get(passport.authenticate('github'));
+router.route('/github').get((req, res, next) => {
+  passport.authenticate('github', {
+    callbackURL: getCallbackURL('github', req.query.url),
+  })(req, res, next);
+});
 
 router
   .route('/github/redirect')

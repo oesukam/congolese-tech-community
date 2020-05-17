@@ -40,12 +40,10 @@ class AuthController {
       picture,
       displayName,
       name,
+      fallbackUrl,
     } = AuthController.fromProvider(providerUser);
 
-    const getUser = userId =>
-      Person.findById(userId)
-        .populate('user')
-        .exec();
+    const getUser = (userId) => Person.findById(userId).populate('user').exec();
 
     const username = displayName.replace(/\s+/g, '') + id.substr(0, 5);
 
@@ -82,7 +80,9 @@ class AuthController {
       keywords: `${name.givenName} ${name.familyName}`,
     });
 
-    res.redirect(`${process.env.FRONTEND_URL}?token=${token}&user=${JSON.stringify(user)}`);
+    res.redirect(`${
+        process.env.FRONTEND_URL
+      }/${fallbackUrl}?token=${token}&user=${JSON.stringify(user)}`,);
   }
 
   /**
@@ -97,6 +97,7 @@ class AuthController {
    * @return {void}
    */
   static async socialAuth(req, res) {
+    req.user.fallbackUrl = req.query.fallback;
     await AuthController.findOrCreate(res, req.user);
   }
 
@@ -142,10 +143,7 @@ class AuthController {
       user: user._id,
     });
 
-    const getUser = id =>
-      Organization.findById(id)
-        .populate('user')
-        .exec();
+    const getUser = (id) => Organization.findById(id).populate('user').exec();
 
     const result = await getUser(organization.id);
 
@@ -202,10 +200,8 @@ class AuthController {
       });
     }
 
-    const getUser = userId =>
-      Organization.findOne({ user: userId })
-        .populate('user')
-        .exec();
+    const getUser = (userId) =>
+      Organization.findOne({ user: userId }).populate('user').exec();
 
     const result = await getUser(user.id);
 
